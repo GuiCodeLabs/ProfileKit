@@ -1,16 +1,12 @@
 {
   "username": "GuiCodeLabs",
   "name": "Guilherme Beserra",
-  "first_year": 2024,
   "year": 2026,
-  "contributions_all": 443,
   "contributions_year": 401,
-  "commits_all": 159,
   "commits_year": 126,
   "stars": 40,
   "prs": 8,
   "issues": 0,
-  "visits": 5,
   "languages": [
     {
       "name": "Python",
