@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta name="description" content="Monte um README de perfil do GitHub com cartões de status, linguagens e ritmo de contribuições." />
+    <title>ProfileKit — gerador de README para GitHub</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="ProfileKit, início">
+        <span class="brand-mark" aria-hidden="true">&lt;/&gt;</span>
+        <span>Profile<span class="brand-accent">Kit</span></span>
+      </a>
+      <nav class="top-nav" aria-label="Navegação principal">
+        <a href="#como-funciona" data-i18n="navGuide">Como funciona</a>
+        <a href="https://github.com/GuiCodeLabs/github-profile-card" target="_blank" rel="noreferrer" data-i18n="navSource">Código-fonte</a>
+        <label class="locale-control">
+          <span class="sr-only" data-i18n="languageLabel">Idioma</span>
+          <select id="locale" aria-label="Idioma">
+            <option value="pt-BR">PT-BR</option>
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+          </select>
+        </label>
+      </nav>
+    </header>
+
+    <main id="top" class="page-shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-mark"></span><span data-i18n="eyebrow">GERADOR OPEN SOURCE · PERFIL GITHUB</span></p>
+          <h1 data-i18n="heroTitle">Mostre seu trabalho<br /><span>com clareza.</span></h1>
+          <p class="hero-description" data-i18n="heroDescription">
+            Escolha os cartões, confira a prévia e gere um snippet pronto para o README do seu perfil.
+          </p>
+          <div class="hero-trust">
+            <span class="trust-icon" aria-hidden="true">✓</span>
+            <span data-i18n="privacyLine">Sem login. Sem tokens no navegador. Seus dados ficam no GitHub.</span>
+          </div>
+        </div>
+        <a class="repo-pill" href="https://github.com/GuiCodeLabs/github-profile-card" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 2 12l6 7M16 5l6 7-6 7M14 3l-4 18" /></svg>
+          <span data-i18n="openSource">Código aberto</span>
+          <span class="repo-arrow" aria-hidden="true">↗</span>
+        </a>
+      </section>
+
+      <section class="builder" aria-label="Gerador de README">
+        <div class="settings-panel panel">
+          <div class="panel-heading">
+            <div>
+              <p class="step-label"><span>01</span><span data-i18n="stepConfigure">CONFIGURE</span></p>
+              <h2 data-i18n="formTitle">Seu perfil</h2>
+            </div>
+            <span class="panel-index" aria-hidden="true">⌘</span>
+          </div>
+
+          <div class="field-grid">
+            <label class="field field-wide" for="username">
+              <span data-i18n="usernameLabel">Usuário do GitHub</span>
+              <span class="input-wrap">
+                <span class="input-prefix">@</span>
+                <input id="username" name="username" autocomplete="off" spellcheck="false" value="GuiCodeLabs" maxlength="39" />
+              </span>
+              <small data-i18n="usernameHint">O mesmo nome que aparece em github.com/...</small>
+            </label>
+
+            <label class="field" for="repository">
+              <span data-i18n="repoLabel">Repositório dos cartões</span>
+              <input id="repository" name="repository" autocomplete="off" spellcheck="false" value="github-profile-card" maxlength="100" />
+            </label>
+
+            <label class="field" for="format">
+              <span data-i18n="formatLabel">Formato do snippet</span>
+              <select id="format" name="format">
+                <option value="html" data-i18n="htmlOption">HTML · responsivo</option>
+                <option value="markdown" data-i18n="markdownOption">Markdown · simples</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset class="card-options">
+            <legend data-i18n="cardsLegend">Cartões no README</legend>
+            <label class="check-row">
+              <input type="checkbox" name="card" value="stats" checked />
+              <span class="check-box" aria-hidden="true"></span>
+              <span class="option-icon icon-stats" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h3" /></svg>
+              </span>
+              <span class="option-copy"><strong data-i18n="statsOption">Status do GitHub</strong><small data-i18n="statsHint">Contribuições, commits, estrelas e visitas</small></span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox" name="card" value="languages" checked />
+              <span class="check-box" aria-hidden="true"></span>
+              <span class="option-icon icon-languages" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="m8 5-6 7 6 7M16 5l6 7-6 7M14 3l-4 18" /></svg>
+              </span>
+              <span class="option-copy"><strong data-i18n="languagesOption">Linguagens</strong><small data-i18n="languagesHint">Distribuição de código por linguagem</small></span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox" name="card" value="rhythm" checked />
+              <span class="check-box" aria-hidden="true"></span>
+              <span class="option-icon icon-rhythm" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="m12 2 4 7-2 2 5 4-3 7H8l-4-6 4-5 1 4 3-5-2-3 2-5Z" /></svg>
+              </span>
+              <span class="option-copy"><strong data-i18n="rhythmOption">Ritmo de contribuições</strong><small data-i18n="rhythmHint">Total histórico e sequências</small></span>
+            </label>
+          </fieldset>
+
+          <div class="advanced-box">
+            <label class="switch-row" for="liveViews">
+              <span class="switch-copy"><strong data-i18n="liveLabel">Contador de visitas via Vercel</strong><small data-i18n="liveHint">Consulta ao receber a imagem; o cache do GitHub ainda pode interferir.</small></span>
+              <span class="switch">
+                <input id="liveViews" type="checkbox" />
+                <span class="switch-track" aria-hidden="true"></span>
+              </span>
+            </label>
+            <label id="deploymentField" class="field deployment-field" for="deploymentUrl" hidden>
+              <span data-i18n="deploymentLabel">URL do seu deploy Vercel</span>
+              <input id="deploymentUrl" type="url" placeholder="https://seu-projeto.vercel.app" autocomplete="url" />
+              <small data-i18n="deploymentHint">O projeto precisa estar conectado ao seu repositório e configurado para seu perfil.</small>
+            </label>
+          </div>
+
+          <p id="formError" class="form-error" role="alert" hidden></p>
+          <button id="generateButton" class="primary-button" type="button">
+            <span data-i18n="generateButton">Gerar snippet</span>
+            <span aria-hidden="true">↘</span>
+          </button>
+          <p class="fine-print" data-i18n="finePrint">O gerador cria apenas os links. Os cartões são atualizados pela GitHub Action da sua cópia.</p>
+        </div>
+
+        <div class="preview-column">
+          <div class="preview-panel panel">
+            <div class="preview-heading">
+              <div>
+                <p class="step-label"><span>02</span><span data-i18n="stepPreview">PRÉVIA</span></p>
+                <h2 data-i18n="previewTitle">Seu layout</h2>
+              </div>
+              <span class="preview-badge"><span></span><span data-i18n="previewLive">AO VIVO</span></span>
+            </div>
+
+            <div class="cards-preview">
+              <article class="mini-card stats-card" data-card-preview="stats">
+                <div class="mini-card-heading"><span class="mini-icon">▦</span><strong data-i18n="previewStats">Status do GitHub</strong></div>
+                <div class="mini-separator"></div>
+                <div class="metric-line"><span class="metric-symbol symbol-star">☆</span><span data-i18n="metricStars">Estrelas</span><b>40</b></div>
+                <div class="metric-line"><span class="metric-symbol symbol-commit">⑂</span><span data-i18n="metricCommits">Commits · ano</span><b>118</b></div>
+                <div class="metric-line"><span class="metric-symbol symbol-repo">▤</span><span data-i18n="metricRepos">Repositórios · ano</span><b>6</b></div>
+                <div class="metric-line"><span class="metric-symbol symbol-calendar">▦</span><span data-i18n="metricContributions">Contribuições · ano</span><b>387</b></div>
+                <div class="metric-line"><span class="metric-symbol symbol-eye">◇</span><span data-i18n="metricViews">Visitas do perfil</span><b>5</b></div>
+              </article>
+
+              <article class="mini-card languages-card" data-card-preview="languages">
+                <div class="mini-card-heading"><span class="mini-icon code-icon">&lt;/&gt;</span><strong data-i18n="previewLanguages">Linguagens mais usadas</strong></div>
+                <div class="mini-separator"></div>
+                <div class="language-stack" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="language-list">
+                  <span><i class="dot dot-python"></i>Python <b>68%</b></span>
+                  <span><i class="dot dot-php"></i>PHP <b>18%</b></span>
+                  <span><i class="dot dot-js"></i>JavaScript <b>8%</b></span>
+                  <span><i class="dot dot-css"></i>CSS <b>4%</b></span>
+                </div>
+                <p class="preview-caption" data-i18n="previewLanguageNote">Código dos repositórios configurados</p>
+              </article>
+
+              <article class="mini-card rhythm-card" data-card-preview="rhythm">
+                <div class="mini-card-heading"><span class="mini-icon flame-icon">⌁</span><strong data-i18n="previewRhythm">Ritmo de contribuições</strong></div>
+                <div class="mini-separator"></div>
+                <div class="rhythm-values">
+                  <div><b>432</b><span data-i18n="metricAllTime">Contribuições · todo o período</span></div>
+                  <div><b>3</b><span data-i18n="metricCurrent">Sequência atual · dias</span></div>
+                  <div><b>6</b><span data-i18n="metricBest">Maior sequência · dias</span></div>
+                </div>
+                <div class="activity-preview" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <p class="preview-caption" data-i18n="previewRhythmNote">Prévia visual · os números serão os seus</p>
+              </article>
+            </div>
+            <p class="preview-disclaimer"><span aria-hidden="true">ⓘ</span><span data-i18n="previewDisclaimer">Os números acima são ilustrativos. Seus cartões recebem métricas da sua conta após configurar o repositório.</span></p>
+          </div>
+
+          <section class="output-panel panel" aria-labelledby="outputTitle">
+            <div class="output-heading">
+              <div>
+                <p class="step-label"><span>03</span><span data-i18n="stepOutput">COPIE</span></p>
+                <h2 id="outputTitle" data-i18n="outputTitle">Snippet do README</h2>
+              </div>
+              <button id="copyButton" class="copy-button" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h12v13H8zM4 16H3V3h13v2" /></svg>
+                <span data-i18n="copyButton">Copiar código</span>
+              </button>
+            </div>
+            <pre class="code-window"><code id="snippet" aria-live="polite"></code></pre>
+            <p id="copyStatus" class="copy-status" role="status" aria-live="polite"></p>
+          </section>
+        </div>
+      </section>
+
+      <section id="como-funciona" class="steps-section">
+        <div class="section-heading">
+          <p class="eyebrow"><span class="eyebrow-mark"></span><span data-i18n="howEyebrow">DA CÓPIA AO PERFIL</span></p>
+          <h2 data-i18n="howTitle">Três passos. Seu perfil atualizado.</h2>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card"><span class="step-number">01</span><h3 data-i18n="howForkTitle">Faça sua cópia</h3><p data-i18n="howForkText">Crie um fork público deste repositório para gerar os cartões com as suas métricas.</p><a href="https://github.com/GuiCodeLabs/github-profile-card/fork" target="_blank" rel="noreferrer"><span data-i18n="forkLink">Abrir fork no GitHub</span><span aria-hidden="true">↗</span></a></article>
+          <article class="step-card"><span class="step-number">02</span><h3 data-i18n="howConfigureTitle">Configure a Action</h3><p data-i18n="howConfigureText">Ative o workflow. Secrets opcionais permitem agregar contribuições e linguagens privadas com leitura limitada.</p><a href="https://github.com/GuiCodeLabs/github-profile-card/blob/main/docs/CUSTOMIZATION.md" target="_blank" rel="noreferrer"><span data-i18n="permissionsLink">Ver permissões e guia</span><span aria-hidden="true">↗</span></a></article>
+          <article class="step-card"><span class="step-number">03</span><h3 data-i18n="howPasteTitle">Cole no perfil</h3><p data-i18n="howPasteText">Adicione o snippet ao README do repositório que tem o mesmo nome da sua conta GitHub.</p><a href="https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile" target="_blank" rel="noreferrer"><span data-i18n="profileHelp">Ajuda do GitHub</span><span aria-hidden="true">↗</span></a></article>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <a class="brand footer-brand" href="#top"><span class="brand-mark" aria-hidden="true">&lt;/&gt;</span><span>Profile<span class="brand-accent">Kit</span></span></a>
+        <p data-i18n="footerText">Feito para deixar seus projetos falarem por você.</p>
+        <a href="https://github.com/GuiCodeLabs/github-profile-card/blob/main/LICENSE" target="_blank" rel="noreferrer" data-i18n="licenseLink">MIT License</a>
+      </footer>
+    </main>
+
+    <script type="module" src="/web/app.js"></script>
+  </body>
+</html>
