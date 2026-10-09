@@ -1,0 +1,35 @@
+name: Atualizar cartão do perfil
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/generate_card.py
+      - tests/test_generate_card.py
+      - .github/workflows/update-card.yml
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Verificar gerador
+        run: python3 -m unittest discover -s tests
+      - name: Gerar SVG com dados públicos
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/generate_card.py
+      - name: Publicar cartão
+        run: |
+          git add -- profile/stats.svg
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m 'Atualiza cartão público do perfil'
+            git push origin HEAD:main
+          fi
