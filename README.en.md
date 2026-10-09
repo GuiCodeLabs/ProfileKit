@@ -1,54 +1,50 @@
 # GitHub Profile Card
 
-Original SVG cards for GitHub activity, programming languages and contribution streaks. This public MIT-licensed repository powers the [GuiCodeLabs profile](https://github.com/GuiCodeLabs) and can be copied for other users. [Documentação em português](README.md).
+[Português](README.md) · [MIT License](LICENSE)
 
-<p align="center"><img src="profile/stats-en.svg" width="520" alt="GitHub activity card" /></p>
+Three original SVG cards for **GitHub contributions, languages and streaks**. This project powers [Guilherme Beserra's profile](https://github.com/GuiCodeLabs) and can be copied for your own profile.
 
-## Use it for your profile
+<p align="center">
+  <img src="profile/stats-en.svg" width="410" alt="GitHub statistics" />
+  <img src="profile/languages-en.svg" width="410" alt="Repository languages" />
+</p>
+<p align="center">
+  <picture>
+    <source media="(max-width: 600px)" srcset="profile/rhythm-mobile-en.svg" />
+    <img src="profile/rhythm-en.svg" width="840" alt="Contribution rhythm" />
+  </picture>
+</p>
 
-1. Copy this repository to your account and edit `profile-card.json`: `username`, `display_name`, `timezone`, and repositories excluded from **language stats only**.
-2. Enable Actions and allow the workflow to write to the default branch. It uses the automatic repository-scoped `GITHUB_TOKEN`; no personal access token is needed.
-3. Embed the cards from your copy of the repository. Put each image in a separate paragraph so it fills the available width on mobile.
+The cards show all calendar contributions (including anonymous private counts when enabled), yearly contributions, visible commits, stars, PRs, issues, profile views, code languages and streaks. **Anonymous private contributions are not claimed to be private commits.** Repository content and names remain hidden.
 
-```html
-<p align="center"><img src="https://raw.githubusercontent.com/YOUR_USER/github-profile-card/main/profile/stats-en.svg" width="520" alt="GitHub activity" /></p>
-<p align="center"><img src="https://raw.githubusercontent.com/YOUR_USER/github-profile-card/main/profile/languages-en.svg" width="520" alt="Repository languages" /></p>
-<p align="center"><img src="https://raw.githubusercontent.com/YOUR_USER/github-profile-card/main/profile/rhythm-en.svg" width="520" alt="Contribution streaks" /></p>
-```
+## Add them to your profile
 
-Use the filenames without `-en` for Portuguese and with `-es` for Spanish. A GitHub README image cannot detect each viewer's locale reliably; choose the language in your Markdown. The **programming languages** themselves are detected automatically from the configured user's public repositories.
-
-## Understand the counts
-
-- **Calendar contributions** add GitHub's yearly contribution calendars. They include recognized public activity and, if the user opts in, anonymous private contribution counts. They are not all commits.
-- **Public commits** add `totalCommitContributions` for the same years with the repository's automatic token. Private commits are not exposed or distinguished by type.
-- **Stars** are received by public owned repositories. **Languages** are based on GitHub's byte counts in owned public repositories, excluding forks, archives and configured repository names. Percentages do not measure proficiency.
-- **Streaks** use consecutive days of contribution-calendar activity. **Views** are requests reaching the Komarev badge service, not unique people.
-
-The annual boundaries use the timezone in `profile-card.json`. The original SVG design and renderer code are in `scripts/generate_card.py`.
-
-## Refresh rate and live views
-
-GitHub Actions regenerates the static SVGs every 15 minutes, subject to GitHub's scheduling delays. It commits only when data changes. A daily run fetches the visitor badge for the static fallback; that request itself increments the service's counter.
-
-For a more current view number **inside the same card**, deploy `api/card.js` to Vercel, set `PROFILE_REPOSITORY` to `YOUR_USER/github-profile-card` and `PROFILE_USER` to your username, then use:
+1. Create a public copy of this repository. Edit `profile-card.json` with your username, display name and repositories to omit **from the language card only**.
+2. Enable Actions and allow it to write to your main branch. The built-in `GITHUB_TOKEN` is sufficient; no personal access token is required.
+3. Embed the images from your copy of the repository:
 
 ```html
-<img src="https://YOUR-DEPLOY.vercel.app/api/card?type=stats&amp;locale=en" width="520" alt="GitHub activity" />
+<p align="center">
+  <img src="https://raw.githubusercontent.com/YOUR_USER/github-profile-card/main/profile/stats-en.svg" width="410" alt="GitHub activity" />
+  <img src="https://raw.githubusercontent.com/YOUR_USER/github-profile-card/main/profile/languages-en.svg" width="410" alt="Repository languages" />
+</p>
+<p align="center">
+  <picture>
+    <source media="(max-width: 600px)" srcset="https://raw.githubusercontent.com/YOUR_USER/github-profile-card/main/profile/rhythm-mobile-en.svg" />
+    <img src="https://raw.githubusercontent.com/YOUR_USER/github-profile-card/main/profile/rhythm-en.svg" width="840" alt="Contribution rhythm" />
+  </picture>
+</p>
 ```
 
-The function reads the public generated SVG and refreshes the visit count on origin requests with a 60-second cache. GitHub's image proxy can cache longer, so a new count on **every** page reload is not guaranteed. Remove any separate pixel/badge for the same visitor service to avoid double counting. This repository's own README embeds the static card so its page views do not also count as profile views.
+Use filenames without a suffix for Portuguese or with `-es` for Spanish. The language of a README image cannot be automatically selected for each viewer; the **programming languages** are detected from your public owned repositories.
 
-## Develop
+## How it works
 
-Requires Python 3.11+ and Node.js 20+. No package dependencies for static generation.
+GitHub Actions regenerates the cards every **15 minutes**, subject to scheduling delays, and commits only changed metrics. The optional [live SVG endpoint](docs/CUSTOMIZATION.md#visitas-dentro-do-cartão) fetches a new view count whenever it receives an origin request. GitHub's image proxy can still cache images, so **one increment per page reload is not guaranteed**. A daily job refreshes the static fallback.
+
+See [metric definitions](docs/METRICS.md), [customization and troubleshooting](docs/CUSTOMIZATION.md), and [contribution guide](CONTRIBUTING.md). Runs on Python 3.11+ and Node.js 20+; the generator has no package dependencies.
 
 ```bash
 python3 -m unittest discover -s tests -v
 npm test
-GITHUB_TOKEN=READ_ONLY_TOKEN python3 scripts/generate_card.py
 ```
-
-Never commit a token. In Actions, `GITHUB_TOKEN` is supplied automatically. The optional `--refresh-visits` flag fetches and increments the visitor counter.
-
-Contributions are welcome. [MIT License](LICENSE).

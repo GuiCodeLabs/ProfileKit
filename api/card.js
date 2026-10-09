@@ -52,7 +52,9 @@ export default async function handler(request, response) {
     }
     response.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
     response.setHeader("X-Content-Type-Options", "nosniff");
-    response.setHeader("Cache-Control", "public, max-age=0, s-maxage=60, stale-while-revalidate=30");
+    // We control origin and Vercel caching; GitHub's own image proxy may still cache.
+    response.setHeader("Cache-Control", "no-store, max-age=0");
+    response.setHeader("CDN-Cache-Control", "no-store");
     return response.status(200).send(svg);
   } catch (error) {
     console.error("Card SVG unavailable:", error);

@@ -16,48 +16,44 @@ from collections import Counter
 from dataclasses import asdict, dataclass
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 
 GRAPHQL_URL = "https://api.github.com/graphql"
 SUPPORTED_LOCALES = ("pt-BR", "en", "es")
-PALETTE = ("#56e4c5", "#8ba6ff", "#ffca84", "#dc9bff", "#82c8e8", "#fa91ac")
+PALETTE = ("#7aa2f7", "#bb9af7", "#f7768e", "#9d7cd8", "#7dcfff", "#e0af68")
 LABELS = {
     "pt-BR": {
-        "activity": "ATIVIDADE NO GITHUB", "since": "contribuições desde {year}",
-        "year": "em {year}", "commits": "COMMITS PÚBLICOS", "all": "todo o período",
-        "stars": "estrelas", "prs": "PRs", "issues": "issues", "visits": "visitas ao perfil",
-        "private": "Calendário inclui contribuições privadas anônimas.",
-        "public": "Calendário: commits, PRs e outras contribuições.",
-        "languages": "Código em foco", "lang_sub": "Repositórios públicos próprios, sem forks nem arquivados",
-        "lang_note": "Percentual de bytes de código, não de experiência com a linguagem.",
-        "other": "Outras", "no_languages": "Nenhuma linguagem encontrada nos repositórios selecionados.",
-        "rhythm": "Ritmo de contribuição", "current": "sequência atual", "best": "maior sequência",
-        "days": "dias", "last_days": "Últimos 35 dias", "rhythm_note": "Atividade do calendário do GitHub",
+        "activity": "Estatísticas do GitHub", "total": "Total de contribuições", "year": "Em {year}",
+        "private": "Privadas anônimas", "commits": "Commits visíveis", "stars": "Estrelas",
+        "prs": "PRs", "issues": "Issues", "visits": "Visitas", "since": "desde {year}",
+        "scope": "Calendário: atividade pública + privada anônima",
+        "languages": "Linguagens mais usadas", "lang_sub": "Código de repositórios públicos próprios",
+        "lang_note": "Proporção de bytes de código · não mede experiência",
+        "other": "Outras", "no_languages": "Nenhuma linguagem encontrada.",
+        "rhythm": "Ritmo de contribuições", "current": "Sequência atual", "best": "Maior sequência",
+        "days": "dias", "last_days": "Últimos 35 dias", "rhythm_note": "Dados do calendário do GitHub",
     },
     "en": {
-        "activity": "GITHUB ACTIVITY", "since": "contributions since {year}",
-        "year": "in {year}", "commits": "PUBLIC COMMITS", "all": "all time",
-        "stars": "stars", "prs": "PRs", "issues": "issues", "visits": "profile views",
-        "private": "Calendar includes shared anonymous private activity.",
-        "public": "Calendar: commits, PRs and other GitHub contributions.",
-        "languages": "Code in focus", "lang_sub": "Owned public repositories, excluding forks and archives",
-        "lang_note": "Share of code bytes, not proficiency in a language.",
-        "other": "Other", "no_languages": "No languages found in the selected repositories.",
-        "rhythm": "Contribution rhythm", "current": "current streak", "best": "longest streak",
-        "days": "days", "last_days": "Last 35 days", "rhythm_note": "Activity from the GitHub contribution calendar",
+        "activity": "GitHub statistics", "total": "All contributions", "year": "In {year}",
+        "private": "Anonymous private", "commits": "Visible commits", "stars": "Stars",
+        "prs": "PRs", "issues": "Issues", "visits": "Views", "since": "since {year}",
+        "scope": "Calendar: public + anonymous private activity",
+        "languages": "Most used languages", "lang_sub": "Code in owned public repositories",
+        "lang_note": "Share of code bytes · not a measure of skill",
+        "other": "Other", "no_languages": "No languages found.",
+        "rhythm": "Contribution rhythm", "current": "Current streak", "best": "Longest streak",
+        "days": "days", "last_days": "Last 35 days", "rhythm_note": "GitHub contribution calendar data",
     },
     "es": {
-        "activity": "ACTIVIDAD EN GITHUB", "since": "contribuciones desde {year}",
-        "year": "en {year}", "commits": "COMMITS PÚBLICOS", "all": "todo el período",
-        "stars": "estrellas", "prs": "PRs", "issues": "incidencias", "visits": "visitas al perfil",
-        "private": "El calendario incluye actividad privada anónima.",
-        "public": "Calendario: commits, PRs y otras contribuciones de GitHub.",
-        "languages": "Código destacado", "lang_sub": "Repositorios públicos propios, sin forks ni archivados",
-        "lang_note": "Porcentaje de bytes de código, no dominio del lenguaje.",
-        "other": "Otras", "no_languages": "No se encontraron lenguajes en los repositorios seleccionados.",
-        "rhythm": "Ritmo de contribución", "current": "racha actual", "best": "racha más larga",
-        "days": "días", "last_days": "Últimos 35 días", "rhythm_note": "Actividad del calendario de contribuciones de GitHub",
+        "activity": "Estadísticas de GitHub", "total": "Contribuciones totales", "year": "En {year}",
+        "private": "Privadas anónimas", "commits": "Commits visibles", "stars": "Estrellas",
+        "prs": "PRs", "issues": "Incidencias", "visits": "Visitas", "since": "desde {year}",
+        "scope": "Calendario: actividad pública + privada anónima",
+        "languages": "Lenguajes más usados", "lang_sub": "Código de repositorios públicos propios",
+        "lang_note": "Proporción de bytes · no mide experiencia",
+        "other": "Otros", "no_languages": "No se encontraron lenguajes.",
+        "rhythm": "Ritmo de contribuciones", "current": "Racha actual", "best": "Racha más larga",
+        "days": "días", "last_days": "Últimos 35 días", "rhythm_note": "Datos del calendario de GitHub",
     },
 }
 
@@ -113,6 +109,7 @@ class Stats:
     commits_all: int
     commits_year: int
     restricted_all: int
+    restricted_year: int
     stars: int
     prs: int
     issues: int
@@ -141,9 +138,11 @@ def graphql(token: str, query: str, variables: dict) -> dict:
     return user
 
 
-def year_bounds(year: int, now: datetime, zone: ZoneInfo) -> tuple[str, str]:
-    start = datetime.combine(date(year, 1, 1), time.min, zone)
-    end = min(datetime.combine(date(year + 1, 1, 1), time.min, zone) - timedelta(seconds=1), now)
+def year_bounds(year: int, now: datetime) -> tuple[str, str]:
+    # GitHub contribution dates are in UTC, even when the account lives elsewhere.
+    start = datetime.combine(date(year, 1, 1), time.min, timezone.utc)
+    end = min(datetime.combine(date(year + 1, 1, 1), time.min, timezone.utc) - timedelta(seconds=1),
+              now.astimezone(timezone.utc))
     return (start.isoformat(timespec="seconds"), end.isoformat(timespec="seconds"))
 
 
@@ -171,8 +170,7 @@ def streak_lengths(days: dict[date, int], today: date) -> tuple[int, int]:
 
 def collect_stats(token: str, config: dict, now: datetime, visits: int | None) -> Stats:
     username = config["username"]
-    zone = ZoneInfo(config.get("timezone", "UTC"))
-    today = now.astimezone(zone).date()
+    today = now.astimezone(timezone.utc).date()
     first = graphql(token, PROFILE_QUERY, {"login": username, "cursor": None})
     repos = first["repositories"]
     nodes = list(repos["nodes"])
@@ -205,7 +203,7 @@ def collect_stats(token: str, config: dict, now: datetime, visits: int | None) -
     yearly: dict[int, dict] = {}
     daily: dict[date, int] = {}
     for year in years:
-        start, end = year_bounds(year, now, zone)
+        start, end = year_bounds(year, now)
         collection = graphql(token, YEAR_QUERY, {"login": username, "from": start, "to": end})[
             "contributionsCollection"
         ]
@@ -227,6 +225,7 @@ def collect_stats(token: str, config: dict, now: datetime, visits: int | None) -
         commits_all=sum(item["totalCommitContributions"] for item in yearly.values()),
         commits_year=yearly[today.year]["totalCommitContributions"],
         restricted_all=sum(item["restrictedContributionsCount"] for item in yearly.values()),
+        restricted_year=yearly[today.year]["restrictedContributionsCount"],
         stars=sum(repo["stargazerCount"] for repo in nodes),
         prs=first["pullRequests"]["totalCount"], issues=first["issues"]["totalCount"],
         visits=visits, languages=languages,
@@ -263,17 +262,15 @@ def fmt(value: int | None, locale: str) -> str:
     return f"{value:,}".replace(",", ".") if locale == "pt-BR" else f"{value:,}"
 
 
-def svg_shell(title: str, description: str, content: str, height: int, extra: str = "") -> str:
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="480" height="{height}" viewBox="0 0 480 {height}" role="img" aria-labelledby="title desc"{extra}>
+def svg_shell(title: str, description: str, content: str, width: int, height: int,
+              extra: str = "") -> str:
+    """Compact cards inspired by the familiar dark palette, with our own layout and SVG."""
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc"{extra}>
 <title id="title">{html.escape(title)}</title><desc id="desc">{html.escape(description)}</desc>
-<defs>
-  <linearGradient id="back" x2="1" y2="1"><stop stop-color="#0b2431"/><stop offset="1" stop-color="#10182c"/></linearGradient>
-  <linearGradient id="glow"><stop stop-color="#56e4c5"/><stop offset="1" stop-color="#8ba6ff"/></linearGradient>
-  <clipPath id="clip"><rect width="480" height="100%" rx="22"/></clipPath>
-</defs>
-<rect width="480" height="{height}" rx="22" fill="url(#back)"/>
-<path d="M0 58H480" stroke="#294456" opacity=".7"/>
-<path d="M410 -38a106 106 0 1 0 0 212a106 106 0 1 0 0-212z" fill="none" stroke="#63e6c8" stroke-opacity=".08" stroke-width="30" clip-path="url(#clip)"/>
+<rect x="0.5" y="0.5" width="{width-1}" height="{height-1}" rx="11" fill="#1a1b28" stroke="#34364c"/>
+<rect x="22" y="16" width="24" height="3" rx="1.5" fill="#7aa2f7"/>
+<rect x="50" y="16" width="11" height="3" rx="1.5" fill="#bb9af7"/>
+<path d="M22 60H{width-22}" stroke="#34364c"/>
 <g font-family="DejaVu Sans, Segoe UI, Arial, sans-serif">{content}</g>
 </svg>
 '''
@@ -281,38 +278,31 @@ def svg_shell(title: str, description: str, content: str, height: int, extra: st
 
 def render_stats(stats: Stats, locale: str) -> str:
     labels = LABELS[locale]
-    year = stats.year
-    notes = labels["private"] if stats.restricted_all else labels["public"]
-    # The larger calendar number includes all contribution types; commit numbers are a subset.
     body = f'''
-<rect x="24" y="23" width="8" height="22" rx="4" fill="#56e4c5"/>
-<text x="44" y="41" fill="#e4f3f2" font-size="18" font-weight="700">{labels['activity']}</text>
-<text x="24" y="82" fill="#93b0ba" font-size="15">{html.escape(stats.name)}</text>
-<text x="24" y="145" fill="#f4faf9" font-size="55" font-weight="700">{fmt(stats.contributions_all, locale)}</text>
-<text x="24" y="170" fill="#a5c4c8" font-size="16">{labels['since'].format(year=stats.first_year)}</text>
-<text x="456" y="127" text-anchor="end" fill="#56e4c5" font-size="35" font-weight="700">{fmt(stats.contributions_year, locale)}</text>
-<text x="456" y="153" text-anchor="end" fill="#a5c4c8" font-size="16">{labels['year'].format(year=year)}</text>
-<path d="M24 194H456" stroke="#294456" opacity=".7"/>
-<text x="24" y="220" fill="#92b5c1" font-size="13" font-weight="700" letter-spacing="1.3">{labels['commits']}</text>
-<rect x="24" y="238" width="209" height="81" rx="13" fill="#183243"/>
-<rect x="247" y="238" width="209" height="81" rx="13" fill="#183243"/>
-<text x="39" y="281" fill="#f4faf9" font-size="34" font-weight="700">{fmt(stats.commits_all, locale)}</text>
-<text x="39" y="306" fill="#a5c4c8" font-size="14">{labels['all']}</text>
-<text x="262" y="281" fill="#f4faf9" font-size="34" font-weight="700">{fmt(stats.commits_year, locale)}</text>
-<text x="262" y="306" fill="#a5c4c8" font-size="14">{year}</text>
-<text x="24" y="356" fill="#ffca84" font-size="24" font-weight="700">{fmt(stats.stars, locale)}</text>
-<text x="24" y="378" fill="#a5c4c8" font-size="13">{labels['stars']}</text>
-<text x="184" y="356" fill="#8ba6ff" font-size="24" font-weight="700">{fmt(stats.prs, locale)}</text>
-<text x="184" y="378" fill="#a5c4c8" font-size="13">{labels['prs']}</text>
-<text x="344" y="356" fill="#dc9bff" font-size="24" font-weight="700">{fmt(stats.issues, locale)}</text>
-<text x="344" y="378" fill="#a5c4c8" font-size="13">{labels['issues']}</text>
-<rect x="24" y="398" width="432" height="49" rx="12" fill="#164c50"/>
-<circle cx="45" cy="422" r="6" fill="#56e4c5"/>
-<text x="62" y="428" fill="#d4eeee" font-size="17">{labels['visits']}</text>
-<text id="visits-value" x="438" y="429" text-anchor="end" fill="#f4faf9" font-size="26" font-weight="700">{fmt(stats.visits, locale)}</text>
-<text x="24" y="475" fill="#95acb8" font-size="13">{html.escape(notes)}</text>'''
-    return svg_shell(f"{stats.name} · {labels['activity']}", notes, body, 496,
-                     f' data-visits="{stats.visits if stats.visits is not None else ""}"')
+<text x="22" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels['activity']}</text>
+<text x="22" y="113" fill="#e3e6f2" font-size="40" font-weight="700">{fmt(stats.contributions_all, locale)}</text>
+<text x="22" y="136" fill="#9ecec5" font-size="14">{labels['total']}</text>
+<text x="22" y="154" fill="#8994ad" font-size="12">{labels['since'].format(year=stats.first_year)}</text>
+<path d="M208 78V157" stroke="#34364c"/>
+<text x="230" y="113" fill="#7aa2f7" font-size="37" font-weight="700">{fmt(stats.contributions_year, locale)}</text>
+<text x="230" y="138" fill="#9ecec5" font-size="14">{labels['year'].format(year=stats.year)}</text>
+<path d="M22 170H398" stroke="#34364c"/>
+<text x="22" y="196" fill="#9ecec5" font-size="14">{labels['private']}</text>
+<text x="22" y="225" fill="#bb9af7" font-size="26" font-weight="700">{fmt(stats.restricted_all, locale)}</text>
+<text x="230" y="196" fill="#9ecec5" font-size="14">{labels['commits']}</text>
+<text x="230" y="225" fill="#bb9af7" font-size="26" font-weight="700">{fmt(stats.commits_all, locale)}</text>
+<path d="M22 240H398" stroke="#34364c"/>
+<text x="22" y="273" fill="#e3e6f2" font-size="23" font-weight="700">{fmt(stats.stars, locale)}</text>
+<text x="22" y="291" fill="#9ecec5" font-size="12">{labels['stars']}</text>
+<text x="130" y="273" fill="#e3e6f2" font-size="23" font-weight="700">{fmt(stats.prs, locale)}</text>
+<text x="130" y="291" fill="#9ecec5" font-size="12">{labels['prs']}</text>
+<text x="216" y="273" fill="#e3e6f2" font-size="23" font-weight="700">{fmt(stats.issues, locale)}</text>
+<text x="216" y="291" fill="#9ecec5" font-size="12">{labels['issues']}</text>
+<text id="visits-value" x="310" y="273" fill="#e3e6f2" font-size="23" font-weight="700">{fmt(stats.visits, locale)}</text>
+<text x="310" y="291" fill="#9ecec5" font-size="12">{labels['visits']}</text>
+<text x="22" y="326" fill="#8994ad" font-size="11">{labels['scope']}</text>'''
+    return svg_shell(f"{stats.name} · {labels['activity']}", labels["scope"], body,
+                     420, 344, f' data-visits="{stats.visits if stats.visits is not None else ""}"')
 
 
 def language_rows(stats: Stats, locale: str) -> tuple[list[tuple[str, str, float]], int]:
@@ -330,49 +320,72 @@ def render_languages(stats: Stats, locale: str) -> str:
     labels = LABELS[locale]
     rows, total = language_rows(stats, locale)
     body = f'''
-<rect x="24" y="23" width="8" height="22" rx="4" fill="#8ba6ff"/>
-<text x="44" y="41" fill="#e4f3f2" font-size="22" font-weight="700">{labels['languages']}</text>
-<text x="24" y="70" fill="#a5c4c8" font-size="13">{labels['lang_sub']}</text>
-<rect x="24" y="91" width="432" height="18" rx="9" fill="#2b4151"/>'''
+<text x="22" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels['languages']}</text>
+<text x="22" y="82" fill="#9ecec5" font-size="13">{labels['lang_sub']}</text>
+<defs><clipPath id="bar"><rect x="22" y="98" width="376" height="14" rx="7"/></clipPath></defs>
+<rect x="22" y="98" width="376" height="14" rx="7" fill="#34364c"/>
+<g clip-path="url(#bar)">'''
     if total:
-        offset = 24.0
+        offset = 22.0
         for _, color, fraction in rows:
-            width = 432 * fraction
-            body += f'<rect x="{offset:.2f}" y="91" width="{width:.2f}" height="18" fill="{color}"/>'
+            width = 376 * fraction
+            body += f'<rect x="{offset:.2f}" y="98" width="{width:.2f}" height="14" fill="{color}"/>'
             offset += width
+        body += '</g>'
         for index, (name, color, fraction) in enumerate(rows):
-            y = 148 + index * 35
-            body += (f'<circle cx="33" cy="{y-5}" r="5" fill="{color}"/>'
-                     f'<text x="48" y="{y}" fill="#e4f3f2" font-size="18">{html.escape(name)}</text>'
-                     f'<text x="448" y="{y}" text-anchor="end" fill="#f4faf9" font-size="18" font-weight="700">{fraction * 100:.1f}%</text>')
+            column, row = divmod(index, 3)
+            x = 22 + column * 206
+            y = 157 + row * 49
+            short_name = name if len(name) <= 13 else name[:12] + "…"
+            body += (f'<circle cx="{x+5}" cy="{y-5}" r="5" fill="{color}"/>'
+                     f'<text x="{x+18}" y="{y}" fill="#e3e6f2" font-size="14">{html.escape(short_name)}</text>'
+                     f'<text x="{x+184}" y="{y}" text-anchor="end" fill="#9ecec5" font-size="13">{fraction * 100:.1f}%</text>')
     else:
-        body += f'<text x="24" y="168" fill="#c1d0d5" font-size="16">{labels["no_languages"]}</text>'
-    body += f'<text x="24" y="361" fill="#95acb8" font-size="13">{labels["lang_note"]}</text>'
-    return svg_shell(f"{stats.name} · {labels['languages']}", labels["lang_note"], body, 382)
+        body += f'</g><text x="22" y="173" fill="#e3e6f2" font-size="15">{labels["no_languages"]}</text>'
+    body += f'<path d="M22 302H398" stroke="#34364c"/><text x="22" y="326" fill="#8994ad" font-size="11">{labels["lang_note"]}</text>'
+    return svg_shell(f"{stats.name} · {labels['languages']}", labels["lang_note"], body, 420, 344)
 
 
-def render_rhythm(stats: Stats, locale: str) -> str:
+def recent_bars(stats: Stats, x: float, bottom: int, width: float, height: int) -> str:
+    maximum = max(stats.recent_days, default=0)
+    parts = []
+    slot = width / len(stats.recent_days) if stats.recent_days else width
+    for index, value in enumerate(stats.recent_days):
+        size = max(3, round(height * value / maximum)) if maximum else 3
+        parts.append(f'<rect x="{x + index * slot:.1f}" y="{bottom-size}" width="{slot*.55:.1f}" height="{size}" rx="1.5" fill="{"#7aa2f7" if value else "#34364c"}"/>')
+    return "".join(parts)
+
+
+def render_rhythm(stats: Stats, locale: str, mobile: bool = False) -> str:
     labels = LABELS[locale]
-    values = stats.recent_days
-    maximum = max(values, default=0)
-    bars = []
-    for index, value in enumerate(values):
-        height = max(3, round(52 * value / maximum)) if maximum else 3
-        x = 24 + index * 12.4
-        bars.append(f'<rect x="{x:.1f}" y="{231-height}" width="7.5" height="{height}" rx="3" fill="{PALETTE[0] if value else "#375363"}"/>')
+    header = f'<text x="22" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels["rhythm"]}</text>'
+    if mobile:
+        body = f'''
+{header}
+<text x="22" y="101" fill="#7aa2f7" font-size="32" font-weight="700">{fmt(stats.contributions_all, locale)}</text>
+<text x="138" y="88" fill="#9ecec5" font-size="14">{labels['total']}</text>
+<text x="138" y="105" fill="#8994ad" font-size="12">{labels['since'].format(year=stats.first_year)}</text>
+<path d="M22 119H398" stroke="#34364c"/>
+<text x="22" y="158" fill="#bb9af7" font-size="32" font-weight="700">{stats.current_streak}</text>
+<text x="138" y="151" fill="#9ecec5" font-size="14">{labels['current']} · {labels['days']}</text>
+<path d="M22 170H398" stroke="#34364c"/>
+<text x="22" y="207" fill="#7aa2f7" font-size="32" font-weight="700">{stats.longest_streak}</text>
+<text x="138" y="201" fill="#9ecec5" font-size="14">{labels['best']} · {labels['days']}</text>
+{recent_bars(stats, 22, 242, 376, 23)}'''
+        return svg_shell(f"{stats.name} · {labels['rhythm']}", labels["rhythm_note"], body, 420, 255)
     body = f'''
-<rect x="24" y="23" width="8" height="22" rx="4" fill="#ffca84"/>
-<text x="44" y="41" fill="#e4f3f2" font-size="21" font-weight="700">{labels['rhythm']}</text>
-<rect x="24" y="65" width="209" height="87" rx="13" fill="#183243"/>
-<rect x="247" y="65" width="209" height="87" rx="13" fill="#183243"/>
-<text x="41" y="114" fill="#56e4c5" font-size="36" font-weight="700">{stats.current_streak}</text>
-<text x="41" y="139" fill="#c4d7d9" font-size="14">{labels['current']} · {labels['days']}</text>
-<text x="264" y="114" fill="#ffca84" font-size="36" font-weight="700">{stats.longest_streak}</text>
-<text x="264" y="139" fill="#c4d7d9" font-size="14">{labels['best']} · {labels['days']}</text>
-<text x="24" y="177" fill="#a5c4c8" font-size="15">{labels['last_days']}</text>
-{''.join(bars)}
-<text x="24" y="260" fill="#95acb8" font-size="13">{labels['rhythm_note']}</text>'''
-    return svg_shell(f"{stats.name} · {labels['rhythm']}", labels["rhythm_note"], body, 280)
+{header}
+<path d="M280 75V157M560 75V157" stroke="#34364c"/>
+<text x="140" y="113" text-anchor="middle" fill="#7aa2f7" font-size="45" font-weight="700">{fmt(stats.contributions_all, locale)}</text>
+<text x="140" y="138" text-anchor="middle" fill="#9ecec5" font-size="15">{labels['total']}</text>
+<text x="140" y="157" text-anchor="middle" fill="#8994ad" font-size="12">{labels['since'].format(year=stats.first_year)}</text>
+<text x="420" y="113" text-anchor="middle" fill="#bb9af7" font-size="45" font-weight="700">{stats.current_streak}</text>
+<text x="420" y="138" text-anchor="middle" fill="#9ecec5" font-size="15">{labels['current']} · {labels['days']}</text>
+<text x="700" y="113" text-anchor="middle" fill="#7aa2f7" font-size="45" font-weight="700">{stats.longest_streak}</text>
+<text x="700" y="138" text-anchor="middle" fill="#9ecec5" font-size="15">{labels['best']} · {labels['days']}</text>
+<text x="22" y="189" fill="#8994ad" font-size="12">{labels['last_days']}</text>
+{recent_bars(stats, 197, 198, 620, 22)}'''
+    return svg_shell(f"{stats.name} · {labels['rhythm']}", labels["rhythm_note"], body, 840, 212)
 
 
 def output_name(kind: str, locale: str) -> str:
@@ -401,6 +414,9 @@ def main() -> None:
     for locale in SUPPORTED_LOCALES:
         for kind, renderer in (("stats", render_stats), ("languages", render_languages), ("rhythm", render_rhythm)):
             (args.output_dir / output_name(kind, locale)).write_text(renderer(stats, locale), encoding="utf-8")
+        (args.output_dir / output_name("rhythm-mobile", locale)).write_text(
+            render_rhythm(stats, locale, mobile=True), encoding="utf-8"
+        )
     data = json.loads(json.dumps(asdict(stats)))
     previous.pop("generated_at", None)
     data["generated_at"] = now.isoformat(timespec="seconds")

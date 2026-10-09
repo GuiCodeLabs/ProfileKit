@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""Render every card from a previously generated snapshot, without API calls."""
+
+import argparse
+import json
+from pathlib import Path
+
+from generate_card import (SUPPORTED_LOCALES, Language, Stats, output_name,
+                           render_languages, render_rhythm, render_stats)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data", type=Path, default=Path("profile/data.json"))
+    parser.add_argument("--output-dir", type=Path, default=Path("preview"))
+    args = parser.parse_args()
+    data = json.loads(args.data.read_text(encoding="utf-8"))
+    data.pop("generated_at", None)
+    data["languages"] = tuple(Language(**item) for item in data["languages"])
+    data["recent_days"] = tuple(data["recent_days"])
+    # Support snapshots created before restricted_year was added.
+    data.setdefault("restricted_year", 0)
+    stats = Stats(**data)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    for locale in SUPPORTED_LOCALES:
+        cards = {
+            "stats": render_stats(stats, locale),
+            "languages": render_languages(stats, locale),
+            "rhythm": render_rhythm(stats, locale),
+            "rhythm-mobile": render_rhythm(stats, locale, mobile=True),
+        }
+        for kind, svg in cards.items():
+            (args.output_dir / output_name(kind, locale)).write_text(svg, encoding="utf-8")
+    print(f"Rendered {len(SUPPORTED_LOCALES) * 4} SVGs in {args.output_dir}")
+
+
+if __name__ == "__main__":
+    main()

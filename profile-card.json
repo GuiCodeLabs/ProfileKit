@@ -1,7 +1,6 @@
 {
   "username": "GuiCodeLabs",
   "display_name": "Guilherme Beserra",
-  "timezone": "America/Fortaleza",
   "visits_username": "GuiCodeLabs",
   "exclude_repositories": ["GuiCodeLabs", "github-profile-card"]
 }

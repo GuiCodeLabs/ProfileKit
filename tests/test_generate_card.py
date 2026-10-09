@@ -5,7 +5,6 @@ import xml.etree.ElementTree as ET
 from datetime import date, datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
-from zoneinfo import ZoneInfo
 
 
 spec = importlib.util.spec_from_file_location(
@@ -20,7 +19,7 @@ class CardTests(unittest.TestCase):
     def test_calendar_and_public_commits_remain_distinct(self):
         now = datetime(2026, 10, 9, 2, 20, tzinfo=timezone.utc)
         config = {"username": "GuiCodeLabs", "display_name": "Gui & Code",
-                  "timezone": "America/Fortaleza", "exclude_repositories": ["profile"]}
+                  "exclude_repositories": ["profile"]}
         first = {
             "name": "Gui", "contributionsCollection": {"contributionYears": [2024, 2025, 2026]},
             "pullRequests": {"totalCount": 2}, "issues": {"totalCount": 0},
@@ -54,6 +53,7 @@ class CardTests(unittest.TestCase):
             stats = card.collect_stats("test-token", config, now, 7)
         self.assertEqual((stats.contributions_all, stats.contributions_year), (413, 113))
         self.assertEqual((stats.commits_all, stats.commits_year), (141, 61))
+        self.assertEqual((stats.restricted_all, stats.restricted_year), (130, 80))
         self.assertEqual((stats.current_streak, stats.longest_streak), (2, 2))
         self.assertEqual([lang.name for lang in stats.languages], ["Python", "HTML"])
         self.assertEqual(stats.stars, 40)
@@ -64,21 +64,23 @@ class CardTests(unittest.TestCase):
         self.assertIn("Gui &amp; Code", svg)
         self.assertIn("413", svg)
         self.assertIn("141", svg)
-        self.assertIn('viewBox="0 0 480 496"', svg)
+        self.assertIn('viewBox="0 0 420 344"', svg)
+        self.assertIn("Privadas anônimas", svg)
+        self.assertIn("Commits visíveis", svg)
 
-        for locale, expected in (("en", "GITHUB ACTIVITY"), ("es", "ACTIVIDAD EN GITHUB")):
+        for locale, expected in (("en", "GitHub statistics"), ("es", "Estadísticas de GitHub")):
             self.assertIn(expected, card.render_stats(stats, locale))
             ET.fromstring(card.render_languages(stats, locale))
             ET.fromstring(card.render_rhythm(stats, locale))
+            ET.fromstring(card.render_rhythm(stats, locale, mobile=True))
         rows, total = card.language_rows(stats, "pt-BR")
         self.assertEqual(total, 1000)
         self.assertAlmostEqual(sum(row[2] for row in rows), 1)
 
-    def test_year_boundaries_follow_profile_timezone(self):
-        from_, to = card.year_bounds(2025, datetime(2026, 10, 9, tzinfo=timezone.utc),
-                                     ZoneInfo("America/Fortaleza"))
-        self.assertEqual(from_, "2025-01-01T00:00:00-03:00")
-        self.assertEqual(to, "2025-12-31T23:59:59-03:00")
+    def test_year_boundaries_match_github_utc_calendar(self):
+        from_, to = card.year_bounds(2025, datetime(2026, 10, 9, tzinfo=timezone.utc))
+        self.assertEqual(from_, "2025-01-01T00:00:00+00:00")
+        self.assertEqual(to, "2025-12-31T23:59:59+00:00")
 
     def test_streak_uses_yesterday_when_today_has_no_activity(self):
         today = date(2026, 10, 8)
