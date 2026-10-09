@@ -33,7 +33,9 @@ LABELS = {
         "lang_sub_private": "Código público + privado acessível",
         "other": "Outras", "no_languages": "Nenhuma linguagem encontrada.",
         "rhythm": "Ritmo de contribuições", "current": "Sequência atual", "best": "Maior sequência",
-        "days": "dias", "last_days": "Últimos 35 dias · atividade diária", "rhythm_note": "Dados do calendário do GitHub",
+        "days": "dias", "last_days": "Últimos 35 dias · atividade diária",
+        "oldest": "35 dias atrás", "today": "hoje",
+        "rhythm_note": "Dados do calendário do GitHub",
     },
     "en": {
         "activity": "GitHub statistics", "total": "Contributions · all time",
@@ -46,7 +48,9 @@ LABELS = {
         "lang_sub_private": "Code in accessible public + private repositories",
         "other": "Other", "no_languages": "No languages found.",
         "rhythm": "Contribution rhythm", "current": "Current streak", "best": "Longest streak",
-        "days": "days", "last_days": "Last 35 days · daily activity", "rhythm_note": "GitHub contribution calendar data",
+        "days": "days", "last_days": "Last 35 days · daily activity",
+        "oldest": "35 days ago", "today": "today",
+        "rhythm_note": "GitHub contribution calendar data",
     },
     "es": {
         "activity": "Estadísticas de GitHub", "total": "Contribuciones · todo el período",
@@ -59,7 +63,9 @@ LABELS = {
         "lang_sub_private": "Código público + privado accesible",
         "other": "Otros", "no_languages": "No se encontraron lenguajes.",
         "rhythm": "Ritmo de contribuciones", "current": "Racha actual", "best": "Racha más larga",
-        "days": "días", "last_days": "Últimos 35 días · actividad diaria", "rhythm_note": "Datos del calendario de GitHub",
+        "days": "días", "last_days": "Últimos 35 días · actividad diaria",
+        "oldest": "hace 35 días", "today": "hoy",
+        "rhythm_note": "Datos del calendario de GitHub",
     },
 }
 
@@ -432,8 +438,13 @@ def recent_bars(stats: Stats, x: float, bottom: int, width: float, height: int) 
     parts = []
     slot = width / len(stats.recent_days) if stats.recent_days else width
     for index, value in enumerate(stats.recent_days):
-        size = max(4, round(height * value / maximum)) if maximum else 4
-        parts.append(f'<rect x="{x + index * slot:.1f}" y="{bottom-size}" width="{slot*.58:.1f}" height="{size}" fill="{"#7aa2f7" if value else "#34364c"}"/>')
+        if value and maximum:
+            size = max(5, round(height * (value / maximum) ** 0.5))
+            color = ("#7aa2f7" if value >= 40 else "#6687ce" if value >= 15
+                     else "#5775b4" if value >= 5 else "#465570")
+        else:
+            size, color = 3, "#34364c"
+        parts.append(f'<rect x="{x + index * slot:.1f}" y="{bottom-size}" width="{slot*.58:.1f}" height="{size}" fill="{color}"/>')
     return "".join(parts)
 
 
@@ -469,7 +480,9 @@ def render_rhythm(stats: Stats, locale: str, mobile: bool = False) -> str:
 <text x="700" y="138" text-anchor="middle" fill="#9ecec5" font-size="15">{labels['best']} · {labels['days']}</text>
 <text x="22" y="190" fill="#8994ad" font-size="12">{labels['last_days']}</text>
 <path d="M197 237H817" stroke="#34364c"/>
-{recent_bars(stats, 197, 237, 620, 34)}'''
+{recent_bars(stats, 197, 237, 620, 38)}
+<text x="197" y="252" fill="#8994ad" font-size="11">{labels['oldest']}</text>
+<text x="817" y="252" text-anchor="end" fill="#8994ad" font-size="11">{labels['today']}</text>'''
     return svg_shell(f"{stats.name} · {labels['rhythm']}", labels["rhythm_note"], body, 840, 256)
 
 
@@ -519,3 +532,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

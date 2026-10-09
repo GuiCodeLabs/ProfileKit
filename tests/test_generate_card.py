@@ -212,6 +212,34 @@ class CardTests(unittest.TestCase):
         self.assertIn("Últimos 35 dias · atividade diária", desktop)
         self.assertIn('stroke-linecap="square"', desktop)
 
+    def test_recent_activity_chart_shows_light_days_and_time_direction(self):
+        stats = card.Stats(
+            username="GuiCodeLabs", name="Gui", first_year=2024, year=2026,
+            contributions_all=10, contributions_year=4, commits_all=2, commits_year=1,
+            stars=0, prs=0, issues=0, visits=None, languages=(),
+            current_streak=2, longest_streak=4, recent_days=(0, 1, 5, 15, 40, 100),
+        )
+        bars = ET.fromstring(
+            f"<svg>{card.recent_bars(stats, 0, 100, 700, 38)}</svg>"
+        ).findall("rect")
+        heights = [int(bar.attrib["height"]) for bar in bars]
+        colors = [bar.attrib["fill"] for bar in bars]
+        self.assertEqual(heights, [3, 5, 8, 15, 24, 38])
+        self.assertEqual(colors, ["#34364c", "#465570", "#5775b4", "#6687ce",
+                                  "#7aa2f7", "#7aa2f7"])
+
+        portuguese = card.render_rhythm(stats, "pt-BR")
+        english = card.render_rhythm(stats, "en")
+        spanish = card.render_rhythm(stats, "es")
+        for svg in (portuguese, english, spanish):
+            ET.fromstring(svg)
+        self.assertIn("35 dias atrás", portuguese)
+        self.assertIn("hoje", portuguese)
+        self.assertIn("35 days ago", english)
+        self.assertIn("today", english)
+        self.assertIn("hace 35 días", spanish)
+        self.assertIn("hoy", spanish)
+
     def test_visit_count_uses_last_numeric_text_in_badge(self):
         svg = b'<svg xmlns="http://www.w3.org/2000/svg"><text>views</text><text>1,234</text><text>1,234</text></svg>'
         self.assertEqual(card.parse_visit_badge(svg), 1234)
@@ -219,3 +247,4 @@ class CardTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
