@@ -4,7 +4,7 @@
 
 Cartões SVG originais para mostrar atividade, linguagens e sequência de contribuições de um perfil GitHub. Este repositório gera os cartões do [GuiCodeLabs](https://github.com/GuiCodeLabs) e pode ser adaptado para qualquer usuário.
 
-<p align="center"><img src="https://guicodelabs-profile-card.vercel.app/api/card?type=stats&amp;locale=pt-BR" width="520" alt="Atividade no GitHub de Guilherme Beserra" /></p>
+<p align="center"><img src="profile/stats.svg" width="520" alt="Atividade no GitHub de Guilherme Beserra" /></p>
 <p align="center"><img src="profile/languages.svg" width="520" alt="Linguagens dos repositórios públicos" /></p>
 
 ## O que os números significam
@@ -61,7 +61,7 @@ O arquivo `api/card.js` fornece a opção de **cartão dinâmico** para hospedar
 <img src="https://SEU-DEPLOY.vercel.app/api/card?type=stats&amp;locale=pt-BR" width="520" alt="Atividade no GitHub" />
 ```
 
-O cache de imagens do GitHub pode segurar a atualização por mais tempo; **não é garantido um incremento por reload**. Para não inflar a contagem, remova qualquer pixel ou badge antigo do mesmo contador ao usar o endpoint dinâmico.
+O cache de imagens do GitHub pode segurar a atualização por mais tempo; **não é garantido um incremento por reload**. Para não inflar a contagem, remova qualquer pixel ou badge antigo do mesmo contador ao usar o endpoint dinâmico. O README deste repositório usa a cópia estática para que as visitas aqui não sejam somadas às do perfil.
 
 ## Desenvolvimento
 

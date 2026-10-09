@@ -2,7 +2,7 @@
 
 Original SVG cards for GitHub activity, programming languages and contribution streaks. This public MIT-licensed repository powers the [GuiCodeLabs profile](https://github.com/GuiCodeLabs) and can be copied for other users. [Documentação em português](README.md).
 
-<p align="center"><img src="https://guicodelabs-profile-card.vercel.app/api/card?type=stats&amp;locale=en" width="520" alt="GitHub activity card" /></p>
+<p align="center"><img src="profile/stats-en.svg" width="520" alt="GitHub activity card" /></p>
 
 ## Use it for your profile
 
@@ -37,7 +37,7 @@ For a more current view number **inside the same card**, deploy `api/card.js` to
 <img src="https://YOUR-DEPLOY.vercel.app/api/card?type=stats&amp;locale=en" width="520" alt="GitHub activity" />
 ```
 
-The function reads the public generated SVG and refreshes the visit count on origin requests with a 60-second cache. GitHub's image proxy can cache longer, so a new count on **every** page reload is not guaranteed. Remove any separate pixel/badge for the same visitor service to avoid double counting.
+The function reads the public generated SVG and refreshes the visit count on origin requests with a 60-second cache. GitHub's image proxy can cache longer, so a new count on **every** page reload is not guaranteed. Remove any separate pixel/badge for the same visitor service to avoid double counting. This repository's own README embeds the static card so its page views do not also count as profile views.
 
 ## Develop
 
