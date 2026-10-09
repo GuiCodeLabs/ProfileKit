@@ -15,6 +15,14 @@ Edite `profile-card.json`:
 
 O filtro `exclude_repositories` afeta **só as linguagens**. O total de contribuições consulta o calendário da conta, inclusive quando os repositórios pertencem a uma organização. As datas do GitHub são UTC, portanto não é preciso configurar fuso horário. Ative a opção de mostrar contribuições privadas no seu perfil se quiser expor as contagens anônimas.
 
+## Incluir linguagens de repositórios privados
+
+O card de linguagens inclui os repositórios próprios públicos por padrão. Para acrescentar seus repositórios próprios privados, crie um **fine-grained personal access token** na sua conta GitHub, selecione somente os repositórios privados que quer incluir e conceda apenas a permissão de repositório **Metadata: read**. Não conceda `Contents`, escrita ou acesso a repositórios que não devam entrar no cálculo.
+
+No repositório público do cartão, abra **Settings → Secrets and variables → Actions → New repository secret**. Use o nome `PRIVATE_REPOSITORIES_TOKEN` e cole o token no campo de valor. O workflow usa essa credencial somente para consultar os totais de linguagens. Os SVGs publicados contêm nomes de linguagens e totais de bytes, sem nomes dos repositórios ou conteúdo de arquivos. Se o secret não estiver configurado, o cartão continua calculando apenas os repositórios públicos e informa isso no subtítulo.
+
+O token precisa ter acesso a cada repositório privado que deseja incluir. Se um repositório pertencer a uma organização, a política da organização ou SSO pode exigir aprovação adicional.
+
 ## Idioma dos cartões
 
 | Idioma | Estatísticas | Linguagens | Sequências | Endpoint |
@@ -48,10 +56,10 @@ python3 scripts/preview.py
 Use `--data CAMINHO` para um snapshot de outra conta e `--output-dir CAMINHO` para outra pasta. Os SVGs resultantes podem ser convertidos com Inkscape. Para consultar números reais novamente:
 
 ```bash
-GITHUB_TOKEN=SEU_TOKEN_DE_LEITURA python3 scripts/generate_card.py
+GITHUB_TOKEN=SEU_TOKEN_DE_LEITURA PRIVATE_REPOSITORIES_TOKEN=TOKEN_OPCIONAL python3 scripts/generate_card.py
 ```
 
-O token é usado apenas no processo local; jamais grave seu valor no repositório. No workflow, o GitHub fornece um token temporário. O parâmetro `--refresh-visits` consulta e incrementa o contador, então não o use repetidamente para prévias.
+Os tokens são usados apenas no processo local; jamais grave seus valores no repositório. No workflow, o GitHub fornece um token temporário para os dados públicos. O parâmetro `--refresh-visits` consulta e incrementa o contador, então não o use repetidamente para prévias.
 
 ## Ajustes de aparência
 

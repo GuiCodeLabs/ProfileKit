@@ -18,8 +18,10 @@ def main() -> None:
     data.pop("generated_at", None)
     data["languages"] = tuple(Language(**item) for item in data["languages"])
     data["recent_days"] = tuple(data["recent_days"])
-    # Support snapshots created before restricted_year was added.
-    data.setdefault("restricted_year", 0)
+    # Older public snapshots may still contain the removed private-count fields.
+    data.pop("restricted_all", None)
+    data.pop("restricted_year", None)
+    data.setdefault("languages_include_private", False)
     stats = Stats(**data)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     for locale in SUPPORTED_LOCALES:

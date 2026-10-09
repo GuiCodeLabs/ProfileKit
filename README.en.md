@@ -5,8 +5,8 @@
 Three original SVG cards for **GitHub contributions, languages and streaks**. The visual uses familiar icons and aligned values for quick scanning, taking inspiration from cards such as [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats); this project's SVGs, icons and code are original. This project powers [Guilherme Beserra's profile](https://github.com/GuiCodeLabs) and can be copied for your own profile.
 
 <p align="center">
-  <img src="profile/stats-en.svg" width="410" alt="GitHub statistics" />
-  <img src="profile/languages-en.svg" width="410" alt="Repository languages" />
+  <img src="profile/stats-en.svg" width="410" alt="Current-year GitHub contribution statistics" />
+  <img src="profile/languages-en.svg" width="410" alt="Languages from configured accessible repositories" />
 </p>
 <p align="center">
   <picture>
@@ -15,12 +15,14 @@ Three original SVG cards for **GitHub contributions, languages and streaks**. Th
   </picture>
 </p>
 
-The cards show all calendar contributions (including anonymous private counts when enabled), yearly contributions, visible commits, stars, PRs, issues, profile views, code languages and streaks. **Anonymous private contributions are not claimed to be private commits.** Repository content and names remain hidden.
+The top card shows one current-year contribution total from GitHub's calendar, including anonymized private activity when enabled. The lower card keeps the all-time total and streaks. Commits remain a separate visible count. **Anonymous private contributions are not claimed to be private commits.** Repository content and names remain hidden.
+
+The language card analyzes owned public repositories by default. To include selected private repositories, optionally add a fine-grained, read-only token with Metadata: read access as the `PRIVATE_REPOSITORIES_TOKEN` Actions secret. Only aggregate language names and byte counts are written to the generated cards; repository names and source code are not.
 
 ## Add them to your profile
 
 1. Create a public copy of this repository. Edit `profile-card.json` with your username, display name and repositories to omit **from the language card only**.
-2. Enable Actions and allow it to write to your main branch. The built-in `GITHUB_TOKEN` is sufficient; no personal access token is required.
+2. Enable Actions and allow it to write to your main branch. The built-in `GITHUB_TOKEN` is sufficient for public data and anonymous private contribution totals. To include private repository languages, configure the optional `PRIVATE_REPOSITORIES_TOKEN` secret with a fine-grained, read-only token; see [the permission guide](docs/CUSTOMIZATION.md).
 3. Embed the images from your copy of the repository:
 
 ```html
@@ -36,7 +38,7 @@ The cards show all calendar contributions (including anonymous private counts wh
 </p>
 ```
 
-Use filenames without a suffix for Portuguese or with `-es` for Spanish. The language of a README image cannot be automatically selected for each viewer; the **programming languages** are detected from your public owned repositories.
+Use filenames without a suffix for Portuguese or with `-es` for Spanish. The language of a README image cannot be automatically selected for each viewer. **Programming languages** are detected from owned public repositories by default and from selected private repositories when the optional token is configured.
 
 ## How it works
 

@@ -61,6 +61,8 @@ jobs:
       - name: Gerar métricas e SVGs
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          # Optional fine-grained token with Metadata: read on selected private repositories.
+          PRIVATE_REPOSITORIES_TOKEN: ${{ secrets.PRIVATE_REPOSITORIES_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           EVENT_SCHEDULE: ${{ github.event.schedule }}
           REFRESH_VISITS: ${{ inputs.refresh_visits }}

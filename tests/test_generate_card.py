@@ -16,7 +16,7 @@ spec.loader.exec_module(card)
 
 
 class CardTests(unittest.TestCase):
-    def test_calendar_and_public_commits_remain_distinct(self):
+    def test_current_year_total_and_public_commits_remain_distinct(self):
         now = datetime(2026, 10, 9, 2, 20, tzinfo=timezone.utc)
         config = {"username": "GuiCodeLabs", "display_name": "Gui & Code",
                   "exclude_repositories": ["profile"]}
@@ -32,19 +32,20 @@ class CardTests(unittest.TestCase):
                  "languages": {"edges": [{"size": 2000, "node": {"name": "Markdown", "color": "#000000"}}]}},
             ], "pageInfo": {"hasNextPage": False, "endCursor": None}},
         }
-        contributions = {2024: (100, 30, 0), 2025: (200, 50, 50), 2026: (113, 61, 80)}
+        # Calendar totals already include anonymous private activity when enabled.
+        contributions = {2024: (100, 30), 2025: (200, 50), 2026: (113, 61)}
 
         def graphql(_token, query, variables):
             if query == card.PROFILE_QUERY:
                 return first
             year = int(variables["from"][:4])
-            total, commits, private = contributions[year]
+            total, commits = contributions[year]
             days = []
             if year == 2026:
                 days = [{"date": "2026-10-07", "contributionCount": 2},
                         {"date": "2026-10-08", "contributionCount": 1}]
             return {"contributionsCollection": {
-                "totalCommitContributions": commits, "restrictedContributionsCount": private,
+                "totalCommitContributions": commits,
                 "contributionCalendar": {"totalContributions": total,
                                          "weeks": [{"contributionDays": days}]},
             }}
@@ -53,7 +54,7 @@ class CardTests(unittest.TestCase):
             stats = card.collect_stats("test-token", config, now, 7)
         self.assertEqual((stats.contributions_all, stats.contributions_year), (413, 113))
         self.assertEqual((stats.commits_all, stats.commits_year), (141, 61))
-        self.assertEqual((stats.restricted_all, stats.restricted_year), (130, 80))
+        self.assertFalse(stats.languages_include_private)
         self.assertEqual((stats.current_streak, stats.longest_streak), (2, 2))
         self.assertEqual([lang.name for lang in stats.languages], ["Python", "HTML"])
         self.assertEqual(stats.stars, 40)
@@ -62,15 +63,17 @@ class CardTests(unittest.TestCase):
         self.assertIn('data-visits="7"', svg)
         self.assertIn('id="visits-value"', svg)
         self.assertIn("Gui &amp; Code", svg)
-        self.assertIn("413", svg)
+        self.assertIn(">113</text>", svg)
+        self.assertNotIn(">413</text>", svg)
         self.assertIn("141", svg)
-        self.assertIn('viewBox="0 0 420 360"', svg)
-        self.assertIn("Contribuições privadas anônimas", svg)
+        self.assertIn('viewBox="0 0 420 280"', svg)
+        self.assertNotIn("Contribuições privadas anônimas", svg)
+        self.assertNotIn("Contribuições · todo o período", svg)
+        self.assertNotIn("Atividade privada aparece", svg)
         self.assertIn("Commits visíveis · todo o período", svg)
         self.assertIn("Commits visíveis · 2026", svg)
-        self.assertIn("Contribuições · todo o período", svg)
         self.assertIn("Contribuições · 2026", svg)
-        self.assertEqual(svg.count('<svg x="'), 10)
+        self.assertEqual(svg.count('<svg x="'), 8)
 
         for locale, expected, year_commits in (
             ("en", "GitHub statistics", "Visible commits · 2026"),
@@ -80,12 +83,71 @@ class CardTests(unittest.TestCase):
             self.assertIn(expected, localized_stats)
             self.assertIn(year_commits, localized_stats)
             ET.fromstring(localized_stats)
-            ET.fromstring(card.render_languages(stats, locale))
+            languages_svg = card.render_languages(stats, locale)
+            ET.fromstring(languages_svg)
+            self.assertNotIn("Proporção de bytes", languages_svg)
+            self.assertNotIn("Share of code bytes", languages_svg)
             ET.fromstring(card.render_rhythm(stats, locale))
             ET.fromstring(card.render_rhythm(stats, locale, mobile=True))
         rows, total = card.language_rows(stats, "pt-BR")
         self.assertEqual(total, 1000)
         self.assertAlmostEqual(sum(row[2] for row in rows), 1)
+
+    def test_private_language_token_adds_only_language_aggregates(self):
+        now = datetime(2026, 10, 9, 2, 20, tzinfo=timezone.utc)
+        first = {
+            "name": "Gui", "contributionsCollection": {"contributionYears": [2026]},
+            "pullRequests": {"totalCount": 0}, "issues": {"totalCount": 0},
+            "repositories": {"nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": None}},
+        }
+        private = {
+            "repositories": {"nodes": [
+                {"name": "secret-project", "isFork": False, "isArchived": False,
+                 "languages": {"edges": [
+                     {"size": 300, "node": {"name": "Python", "color": "#3572A5"}},
+                     {"size": 700, "node": {"name": "Rust", "color": "#dea584"}},
+                 ]}},
+            ], "pageInfo": {"hasNextPage": False, "endCursor": None}},
+        }
+
+        def graphql(token, query, variables):
+            if query == card.PROFILE_QUERY:
+                return first
+            if query == card.PRIVATE_REPOSITORIES_QUERY:
+                self.assertEqual(token, "private-read-token")
+                return private
+            return {"contributionsCollection": {
+                "totalCommitContributions": 0,
+                "contributionCalendar": {"totalContributions": 25, "weeks": []},
+            }}
+
+        with patch.object(card, "graphql", side_effect=graphql):
+            stats = card.collect_stats("public-token", {"username": "GuiCodeLabs"}, now, 4,
+                                       private_repositories_token="private-read-token")
+
+        self.assertTrue(stats.languages_include_private)
+        self.assertEqual([(item.name, item.size) for item in stats.languages],
+                         [("Rust", 700), ("Python", 300)])
+        self.assertNotIn("secret-project", str(card.asdict(stats)))
+        svg = card.render_languages(stats, "pt-BR")
+        self.assertIn("Código público + privado", svg)
+        self.assertNotIn("secret-project", svg)
+
+    def test_language_grid_reads_left_to_right_by_size(self):
+        stats = card.Stats(
+            username="GuiCodeLabs", name="Gui", first_year=2024, year=2026,
+            contributions_all=10, contributions_year=4, commits_all=2, commits_year=1,
+            stars=0, prs=0, issues=0, visits=None,
+            languages=(card.Language("Python", "#3572A5", 600),
+                       card.Language("PHP", "#4F5D95", 250),
+                       card.Language("HTML", "#e34c26", 100),
+                       card.Language("CSS", "#663399", 50)),
+            current_streak=0, longest_streak=0, recent_days=(),
+        )
+        svg = card.render_languages(stats, "pt-BR")
+        self.assertLess(svg.index(">Python</text>"), svg.index(">PHP</text>"))
+        self.assertLess(svg.index(">PHP</text>"), svg.index(">HTML</text>"))
+        self.assertIn('viewBox="0 0 420 290"', svg)
 
     def test_year_boundaries_match_github_utc_calendar(self):
         from_, to = card.year_bounds(2025, datetime(2026, 10, 9, tzinfo=timezone.utc))

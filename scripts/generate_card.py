@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect public GitHub activity and render original, dependency-free SVG cards."""
+"""Collect GitHub activity and render original, dependency-free SVG cards."""
 
 from __future__ import annotations
 
@@ -24,36 +24,36 @@ PALETTE = ("#7aa2f7", "#bb9af7", "#f7768e", "#9d7cd8", "#7dcfff", "#e0af68")
 LABELS = {
     "pt-BR": {
         "activity": "Estatísticas do GitHub", "total": "Contribuições · todo o período",
-        "year": "Contribuições · {year}", "private": "Contribuições privadas anônimas",
+        "year": "Contribuições · {year}",
         "commits": "Commits visíveis · todo o período", "commits_year": "Commits visíveis · {year}",
         "stars": "Estrelas", "prs": "Pull requests", "issues": "Issues", "visits": "Visitas do perfil",
-        "since": "desde {year}", "scope": "Atividade privada aparece somente em totais agregados.",
-        "languages": "Linguagens mais usadas", "lang_sub": "Código de repositórios públicos próprios",
-        "lang_note": "Proporção de bytes de código · não mede experiência",
+        "since": "desde {year}",
+        "languages": "Linguagens mais usadas", "lang_sub_public": "Código de repositórios públicos próprios",
+        "lang_sub_private": "Código público + privado",
         "other": "Outras", "no_languages": "Nenhuma linguagem encontrada.",
         "rhythm": "Ritmo de contribuições", "current": "Sequência atual", "best": "Maior sequência",
         "days": "dias", "last_days": "Últimos 35 dias", "rhythm_note": "Dados do calendário do GitHub",
     },
     "en": {
         "activity": "GitHub statistics", "total": "Contributions · all time",
-        "year": "Contributions · {year}", "private": "Anonymous private contributions",
+        "year": "Contributions · {year}",
         "commits": "Visible commits · all time", "commits_year": "Visible commits · {year}",
         "stars": "Stars", "prs": "Pull requests", "issues": "Issues", "visits": "Profile views",
-        "since": "since {year}", "scope": "Private activity appears only as an aggregate.",
-        "languages": "Most used languages", "lang_sub": "Code in owned public repositories",
-        "lang_note": "Share of code bytes · not a measure of skill",
+        "since": "since {year}",
+        "languages": "Most used languages", "lang_sub_public": "Code in owned public repositories",
+        "lang_sub_private": "Code in public + private repositories",
         "other": "Other", "no_languages": "No languages found.",
         "rhythm": "Contribution rhythm", "current": "Current streak", "best": "Longest streak",
         "days": "days", "last_days": "Last 35 days", "rhythm_note": "GitHub contribution calendar data",
     },
     "es": {
         "activity": "Estadísticas de GitHub", "total": "Contribuciones · todo el período",
-        "year": "Contribuciones · {year}", "private": "Contribuciones privadas anónimas",
+        "year": "Contribuciones · {year}",
         "commits": "Commits visibles · todo el período", "commits_year": "Commits visibles · {year}",
         "stars": "Estrellas", "prs": "Pull requests", "issues": "Incidencias", "visits": "Visitas del perfil",
-        "since": "desde {year}", "scope": "La actividad privada aparece solo en totales agregados.",
-        "languages": "Lenguajes más usados", "lang_sub": "Código de repositorios públicos propios",
-        "lang_note": "Proporción de bytes · no mide experiencia",
+        "since": "desde {year}",
+        "languages": "Lenguajes más usados", "lang_sub_public": "Código de repositorios públicos propios",
+        "lang_sub_private": "Código público + privado",
         "other": "Otros", "no_languages": "No se encontraron lenguajes.",
         "rhythm": "Ritmo de contribuciones", "current": "Racha actual", "best": "Racha más larga",
         "days": "días", "last_days": "Últimos 35 días", "rhythm_note": "Datos del calendario de GitHub",
@@ -78,12 +78,25 @@ query($login: String!, $cursor: String) {
 }
 """
 
+PRIVATE_REPOSITORIES_QUERY = """
+query($login: String!, $cursor: String) {
+  user(login: $login) {
+    repositories(first: 100, after: $cursor, ownerAffiliations: OWNER, privacy: PRIVATE) {
+      nodes {
+        name isFork isArchived
+        languages(first: 100) { edges { size node { name color } } }
+      }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+}
+"""
+
 YEAR_QUERY = """
 query($login: String!, $from: DateTime!, $to: DateTime!) {
   user(login: $login) {
     contributionsCollection(from: $from, to: $to) {
       totalCommitContributions
-      restrictedContributionsCount
       contributionCalendar {
         totalContributions
         weeks { contributionDays { date contributionCount } }
@@ -111,8 +124,6 @@ class Stats:
     contributions_year: int
     commits_all: int
     commits_year: int
-    restricted_all: int
-    restricted_year: int
     stars: int
     prs: int
     issues: int
@@ -121,6 +132,7 @@ class Stats:
     current_streak: int
     longest_streak: int
     recent_days: tuple[int, ...]
+    languages_include_private: bool = False
 
 
 def graphql(token: str, query: str, variables: dict) -> dict:
@@ -171,23 +183,36 @@ def streak_lengths(days: dict[date, int], today: date) -> tuple[int, int]:
     return current, best
 
 
-def collect_stats(token: str, config: dict, now: datetime, visits: int | None) -> Stats:
+def repository_nodes(token: str, query: str, username: str,
+                     connection: dict | None = None) -> list[dict]:
+    if connection is None:
+        connection = graphql(token, query, {"login": username, "cursor": None})["repositories"]
+    nodes = list(connection["nodes"])
+    while connection["pageInfo"]["hasNextPage"]:
+        cursor = connection["pageInfo"]["endCursor"]
+        if not cursor:
+            raise RuntimeError("GitHub repositories pagination has no cursor")
+        connection = graphql(token, query, {"login": username, "cursor": cursor})["repositories"]
+        nodes.extend(connection["nodes"])
+    return nodes
+
+
+def collect_stats(token: str, config: dict, now: datetime, visits: int | None,
+                  private_repositories_token: str | None = None) -> Stats:
     username = config["username"]
     today = now.astimezone(timezone.utc).date()
     first = graphql(token, PROFILE_QUERY, {"login": username, "cursor": None})
-    repos = first["repositories"]
-    nodes = list(repos["nodes"])
-    while repos["pageInfo"]["hasNextPage"]:
-        cursor = repos["pageInfo"]["endCursor"]
-        if not cursor:
-            raise RuntimeError("GitHub repositories pagination has no cursor")
-        repos = graphql(token, PROFILE_QUERY, {"login": username, "cursor": cursor})["repositories"]
-        nodes.extend(repos["nodes"])
+    nodes = repository_nodes(token, PROFILE_QUERY, username, first["repositories"])
+    language_repositories = list(nodes)
+    if private_repositories_token:
+        language_repositories.extend(
+            repository_nodes(private_repositories_token, PRIVATE_REPOSITORIES_QUERY, username)
+        )
 
     excluded = set(config.get("exclude_repositories", []))
     sizes = Counter()
     colors = {}
-    for repo in nodes:
+    for repo in language_repositories:
         if repo["name"] in excluded or repo["isFork"] or repo["isArchived"]:
             continue
         for edge in repo["languages"]["edges"]:
@@ -227,12 +252,11 @@ def collect_stats(token: str, config: dict, now: datetime, visits: int | None) -
         contributions_year=yearly[today.year]["contributionCalendar"]["totalContributions"],
         commits_all=sum(item["totalCommitContributions"] for item in yearly.values()),
         commits_year=yearly[today.year]["totalCommitContributions"],
-        restricted_all=sum(item["restrictedContributionsCount"] for item in yearly.values()),
-        restricted_year=yearly[today.year]["restrictedContributionsCount"],
         stars=sum(repo["stargazerCount"] for repo in nodes),
         prs=first["pullRequests"]["totalCount"], issues=first["issues"]["totalCount"],
         visits=visits, languages=languages,
         current_streak=current, longest_streak=longest, recent_days=last_35,
+        languages_include_private=bool(private_repositories_token),
     )
 
 
@@ -313,9 +337,7 @@ def render_stats(stats: Stats, locale: str) -> str:
         ("commit", labels["commits_year"].format(year=stats.year), stats.commits_year, "#bb9af7"),
         ("pull", labels["prs"], stats.prs, "#bb9af7"),
         ("issue", labels["issues"], stats.issues, "#f7768e"),
-        ("calendar", labels["total"], stats.contributions_all, "#7aa2f7"),
         ("calendar", labels["year"].format(year=stats.year), stats.contributions_year, "#7aa2f7"),
-        ("lock", labels["private"], stats.restricted_all, "#bb9af7"),
         ("eye", labels["visits"], stats.visits, "#7dcfff"),
     )
     body = (f'{svg_icon("calendar", 22, 27, "#7aa2f7", 18)}'
@@ -328,10 +350,9 @@ def render_stats(stats: Stats, locale: str) -> str:
         body += (f'<text x="51" y="{baseline}" fill="#9ecec5" font-size="15">{html.escape(label)}</text>'
                  f'<text{value_id} x="398" y="{baseline}" text-anchor="end" '
                  f'fill="#7dcfff" font-size="18" font-weight="700">{fmt(value, locale)}</text>')
-    body += f'<path d="M22 319H398" stroke="#34364c"/><text x="22" y="341" fill="#8994ad" font-size="11">{labels["scope"]}</text>'
-    description = f"{stats.name} · {labels['scope']}"
+    description = f"{stats.name} · {labels['year'].format(year=stats.year)}"
     return svg_shell(f"{stats.name} · {labels['activity']}", description, body,
-                     420, 360, f' data-visits="{stats.visits if stats.visits is not None else ""}"')
+                     420, 280, f' data-visits="{stats.visits if stats.visits is not None else ""}"')
 
 
 def language_rows(stats: Stats, locale: str) -> tuple[list[tuple[str, str, float]], int]:
@@ -348,10 +369,11 @@ def language_rows(stats: Stats, locale: str) -> tuple[list[tuple[str, str, float
 def render_languages(stats: Stats, locale: str) -> str:
     labels = LABELS[locale]
     rows, total = language_rows(stats, locale)
+    language_scope = labels["lang_sub_private"] if stats.languages_include_private else labels["lang_sub_public"]
     body = f'''
 {svg_icon("code", 22, 27, "#7aa2f7", 18)}
 <text x="50" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels['languages']}</text>
-<text x="22" y="82" fill="#9ecec5" font-size="13">{labels['lang_sub']}</text>
+<text x="22" y="82" fill="#9ecec5" font-size="13">{language_scope}</text>
 <defs><clipPath id="bar"><rect x="22" y="98" width="376" height="14" rx="7"/></clipPath></defs>
 <rect x="22" y="98" width="376" height="14" rx="7" fill="#34364c"/>
 <g clip-path="url(#bar)">'''
@@ -363,7 +385,7 @@ def render_languages(stats: Stats, locale: str) -> str:
             offset += width
         body += '</g>'
         for index, (name, color, fraction) in enumerate(rows):
-            column, row = divmod(index, 3)
+            row, column = divmod(index, 2)
             x = 22 + column * 186
             y = 157 + row * 49
             short_name = name if len(name) <= 13 else name[:12] + "…"
@@ -372,8 +394,7 @@ def render_languages(stats: Stats, locale: str) -> str:
                      f'<text x="{x+178}" y="{y}" text-anchor="end" fill="#9ecec5" font-size="13">{fraction * 100:.1f}%</text>')
     else:
         body += f'</g><text x="22" y="173" fill="#e3e6f2" font-size="15">{labels["no_languages"]}</text>'
-    body += f'<path d="M22 319H398" stroke="#34364c"/><text x="22" y="341" fill="#8994ad" font-size="11">{labels["lang_note"]}</text>'
-    return svg_shell(f"{stats.name} · {labels['languages']}", labels["lang_note"], body, 420, 360)
+    return svg_shell(f"{stats.name} · {labels['languages']}", language_scope, body, 420, 290)
 
 
 def recent_bars(stats: Stats, x: float, bottom: int, width: float, height: int) -> str:
@@ -441,7 +462,8 @@ def main() -> None:
     previous = json.loads(previous_path.read_text(encoding="utf-8")) if previous_path.exists() else {}
     visits = visits_count(config.get("visits_username", config["username"]), previous.get("visits"), args.refresh_visits)
     now = datetime.now(timezone.utc)
-    stats = collect_stats(token, config, now, visits)
+    private_repositories_token = os.environ.get("PRIVATE_REPOSITORIES_TOKEN") or None
+    stats = collect_stats(token, config, now, visits, private_repositories_token)
     for locale in SUPPORTED_LOCALES:
         for kind, renderer in (("stats", render_stats), ("languages", render_languages), ("rhythm", render_rhythm)):
             (args.output_dir / output_name(kind, locale)).write_text(renderer(stats, locale), encoding="utf-8")

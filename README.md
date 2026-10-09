@@ -5,8 +5,8 @@
 Três cartões SVG para apresentar **contribuições, linguagens e sequências** de um perfil GitHub. O visual usa linhas com ícones familiares e números alinhados, inspirado na leitura rápida de cartões como [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats); os SVGs, ícones e o código deste projeto são próprios. O gerador não tem dependências externas. Este repositório alimenta o [perfil de Guilherme Beserra](https://github.com/GuiCodeLabs).
 
 <p align="center">
-  <img src="profile/stats.svg" width="410" alt="Estatísticas de contribuições de GuiCodeLabs" />
-  <img src="profile/languages.svg" width="410" alt="Linguagens dos repositórios públicos" />
+  <img src="profile/stats.svg" width="410" alt="Estatísticas de contribuições do ano atual de GuiCodeLabs" />
+  <img src="profile/languages.svg" width="410" alt="Linguagens dos repositórios acessíveis configurados" />
 </p>
 <p align="center">
   <picture>
@@ -17,10 +17,10 @@ Três cartões SVG para apresentar **contribuições, linguagens e sequências**
 
 ## O que ele mostra
 
-- **Contribuições totais e no ano:** dados do calendário do GitHub, incluindo contagens privadas anônimas quando o usuário habilita essa opção. Os repositórios privados continuam privados.
-- **Atividade privada anônima e commits visíveis:** números separados, sem chamar todas as contribuições privadas de commits.
+- **Contribuições do ano atual:** total do calendário do GitHub, incluindo atividade pública e privada anônima quando o usuário habilita essa opção. O cartão inferior continua mostrando o total histórico.
+- **Commits visíveis, estrelas, PRs, issues e visitas:** commits ficam separados do total de contribuições; as visitas aparecem dentro do primeiro cartão.
 - **Estrelas, PRs, issues e visitas:** as visitas aparecem dentro do primeiro cartão; o endpoint opcional busca uma contagem nova quando recebe a imagem.
-- **Linguagens e sequências:** linguagens detectadas automaticamente nos repositórios públicos próprios; sequência calculada com os dias do calendário.
+- **Linguagens e sequências:** linguagens detectadas automaticamente nos repositórios públicos próprios. Um token granular opcional acrescenta os repositórios privados selecionados; nomes de repositórios e código não são incluídos na saída.
 - **Visual responsivo e três idiomas:** dois cartões no computador, empilhados em telas estreitas, com cartão inferior próprio para celular. PT-BR, inglês e espanhol por nome de arquivo ou parâmetro.
 
 [Como cada métrica é calculada](docs/METRICS.md) · [Personalização, exemplos e solução de problemas](docs/CUSTOMIZATION.md)
@@ -28,13 +28,13 @@ Três cartões SVG para apresentar **contribuições, linguagens e sequências**
 ## Usar no seu perfil
 
 1. Faça sua cópia pública deste repositório e configure usuário, nome e exclusões de linguagens em [`profile-card.json`](profile-card.json).
-2. Ative Actions e permita que o workflow escreva na branch principal. O `GITHUB_TOKEN` automático da execução basta para os dados públicos e as contagens privadas anônimas que você optou por mostrar; **não é necessário um PAT**.
+2. Ative Actions e permita que o workflow escreva na branch principal. O `GITHUB_TOKEN` automático basta para os dados públicos e o total agregado de contribuições privadas. Para incluir linguagens dos seus repositórios privados, configure o secret opcional `PRIVATE_REPOSITORIES_TOKEN` com um token granular de somente leitura; veja [as permissões](docs/CUSTOMIZATION.md#incluir-linguagens-de-repositórios-privados).
 3. Cole o trecho abaixo no README do seu perfil. Troque `SEU_USUARIO` pelo login da sua cópia:
 
 ```html
 <p align="center">
   <img src="https://raw.githubusercontent.com/SEU_USUARIO/github-profile-card/main/profile/stats.svg" width="410" alt="Estatísticas do GitHub" />
-  <img src="https://raw.githubusercontent.com/SEU_USUARIO/github-profile-card/main/profile/languages.svg" width="410" alt="Linguagens do GitHub" />
+  <img src="https://raw.githubusercontent.com/SEU_USUARIO/github-profile-card/main/profile/languages.svg" width="410" alt="Linguagens dos repositórios configurados" />
 </p>
 <p align="center">
   <picture>
