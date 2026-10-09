@@ -1,40 +1,41 @@
 # GitHub Profile Card
 
-[English](README.en.md) · [Licença MIT](LICENSE)
+[English](README.en.md) · [Licença MIT](LICENSE) · [Abrir o gerador web](https://guicodelabs-profile-card.vercel.app)
 
-Três cartões SVG para apresentar **contribuições, linguagens e sequências** de um perfil GitHub. O visual usa linhas com ícones familiares e números alinhados, inspirado na leitura rápida de cartões como [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats); os SVGs, ícones e o código deste projeto são próprios. O gerador não tem dependências externas. Este repositório alimenta o [perfil de Guilherme Beserra](https://github.com/GuiCodeLabs).
+Cartões SVG e um gerador web para montar um README de perfil do GitHub. O projeto oferece três cartões próprios — **status, linguagens e ritmo** — em português, inglês e espanhol. O gerador ajuda a configurar o snippet; as métricas reais são coletadas pela Action na cópia de cada usuário. Nenhum token é digitado no site.
+
+Este repositório alimenta o [perfil de Guilherme Beserra](https://github.com/GuiCodeLabs). O visual usa cartões escuros com ícones lineares e números alinhados, inspirados em padrões de leitura rápida comuns em cartões de perfil; o código, os SVGs e os ícones são deste projeto.
 
 <p align="center">
-  <img src="profile/stats.svg" width="410" alt="Estatísticas de contribuições do ano atual de GuiCodeLabs" />
+  <img src="profile/stats.svg" width="410" alt="Status do GitHub de GuiCodeLabs" />
   <img src="profile/languages.svg" width="410" alt="Linguagens dos repositórios acessíveis configurados" />
 </p>
 <p align="center">
   <picture>
     <source media="(max-width: 600px)" srcset="profile/rhythm-mobile.svg" />
-    <img src="profile/rhythm.svg" width="840" alt="Total de contribuições e sequências" />
+    <img src="profile/rhythm.svg" width="840" alt="Ritmo de contribuições" />
   </picture>
 </p>
 
-## O que ele mostra
+## O que aparece
 
-- **Contribuições do ano atual:** total do calendário do GitHub, incluindo atividade pública e privada anônima quando o usuário habilita essa opção. O cartão inferior continua mostrando o total histórico.
-- **Commits visíveis, estrelas, PRs, issues e visitas:** commits ficam separados do total de contribuições; as visitas aparecem dentro do primeiro cartão.
-- **Estrelas, PRs, issues e visitas:** as visitas aparecem dentro do primeiro cartão; o endpoint opcional busca uma contagem nova quando recebe a imagem.
-- **Linguagens e sequências:** linguagens detectadas automaticamente nos repositórios públicos próprios. Um token granular opcional acrescenta os repositórios privados selecionados; nomes de repositórios e código não são incluídos na saída.
-- **Visual responsivo e três idiomas:** dois cartões no computador, empilhados em telas estreitas, com cartão inferior próprio para celular. PT-BR, inglês e espanhol por nome de arquivo ou parâmetro.
+- **Status do GitHub:** estrelas recebidas, commits no ano, repositórios com commits no ano, PRs, issues, contribuições no ano e visitas ao perfil.
+- **Linguagens:** bytes de código dos repositórios próprios públicos; um token granular opcional acrescenta repositórios privados acessíveis selecionados.
+- **Ritmo:** contribuições de todo o período, sequência atual, maior sequência e atividade diária nas últimas cinco semanas.
+- **Três idiomas e layout responsivo:** cartões lado a lado em telas largas, empilhados em telas estreitas e versão compacta do ritmo para celular.
 
-[Como cada métrica é calculada](docs/METRICS.md) · [Personalização, exemplos e solução de problemas](docs/CUSTOMIZATION.md)
+[Definições e limitações das métricas](docs/METRICS.md) · [Configuração e solução de problemas](docs/CUSTOMIZATION.md) · [Como contribuir](CONTRIBUTING.md)
 
 ## Usar no seu perfil
 
-1. Faça sua cópia pública deste repositório e configure usuário, nome e exclusões de linguagens em [`profile-card.json`](profile-card.json).
-2. Ative Actions e permita que o workflow escreva na branch principal. O `GITHUB_TOKEN` automático basta para os dados públicos e o total agregado de contribuições privadas. Para incluir linguagens dos seus repositórios privados, configure o secret opcional `PRIVATE_REPOSITORIES_TOKEN` com um token granular de somente leitura; veja [as permissões](docs/CUSTOMIZATION.md#incluir-linguagens-de-repositórios-privados).
-3. Cole o trecho abaixo no README do seu perfil. Troque `SEU_USUARIO` pelo login da sua cópia:
+1. Faça uma cópia pública deste repositório. Edite [`profile-card.json`](profile-card.json) com seu login, nome e repositórios a excluir da análise de linguagens.
+2. Ative GitHub Actions e permita que o workflow escreva na branch principal. Por padrão, ele calcula o escopo público. Para incluir contagens privadas agregadas, configure `PRIVATE_CONTRIBUTIONS_TOKEN` com um token clássico somente de leitura e escopo `read:user`. Para acrescentar linguagens privadas, configure separadamente `PRIVATE_REPOSITORIES_TOKEN` com um token granular e **Metadata: read** nos repositórios escolhidos. Nenhum deles precisa de acesso de escrita ou conteúdo; veja o [guia de permissões](docs/CUSTOMIZATION.md).
+3. Cole o trecho gerado pelo [gerador web](https://guicodelabs-profile-card.vercel.app) no README do seu perfil. Também é possível usar diretamente os caminhos abaixo, substituindo `SEU_USUARIO`:
 
 ```html
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SEU_USUARIO/github-profile-card/main/profile/stats.svg" width="410" alt="Estatísticas do GitHub" />
-  <img src="https://raw.githubusercontent.com/SEU_USUARIO/github-profile-card/main/profile/languages.svg" width="410" alt="Linguagens dos repositórios configurados" />
+  <img src="https://raw.githubusercontent.com/SEU_USUARIO/github-profile-card/main/profile/stats.svg" width="410" alt="Status do GitHub" />
+  <img src="https://raw.githubusercontent.com/SEU_USUARIO/github-profile-card/main/profile/languages.svg" width="410" alt="Linguagens dos repositórios" />
 </p>
 <p align="center">
   <picture>
@@ -44,15 +45,15 @@ Três cartões SVG para apresentar **contribuições, linguagens e sequências**
 </p>
 ```
 
-O primeiro cartão pode usar o [endpoint dinâmico](docs/CUSTOMIZATION.md#visitas-dentro-do-cartão) para buscar a contagem de visitas quando o GitHub solicitar uma imagem.
+O primeiro cartão pode usar o [endpoint dinâmico](docs/CUSTOMIZATION.md#visitas-dentro-do-cartão) para buscar visitas quando a imagem for solicitada. A revalidação por reload não é garantida porque o proxy do GitHub pode reaproveitar uma cópia.
 
-## Atualizações e privacidade
+## Atualizações, privacidade e autoria
 
-O workflow testa o código em pushes e pull requests; a atualização de métricas gera SVGs a cada **15 minutos**, sujeita a atrasos do agendador do GitHub, e só grava um commit quando algum dado muda. Uma execução diária atualiza o valor de visitas da cópia estática. O README deste repositório usa a cópia estática, para não somar suas visitas ao contador do perfil de Guilherme.
+GitHub Actions testa as alterações e atualiza os dados a cada 15 minutos (o agendador pode atrasar). O workflow grava um commit como `github-actions[bot]` somente quando algum SVG ou dado realmente muda; esses commits representam a manutenção automática das imagens. Commits de código e documentação são feitos por pessoas em branches e PRs. O workflow não tenta atribuir atualizações automáticas à conta de uma pessoa.
 
-O endpoint dinâmico envia `Cache-Control: no-cache` para pedir que o proxy de imagens do GitHub (Camo) revalide a imagem, além de `no-store` para evitar cache no Vercel. Cada requisição que chega à função consulta o contador; o GitHub ainda controla o próprio proxy, então **não há garantia de uma visita por reload**. Uma Action de CI não recebe os reloads feitos por leitores. A API pública tampouco separa quantos eventos privados anônimos foram especificamente commits ou PRs; mostramos a contagem agregada fielmente.
+O endpoint Vercel consulta o contador de visitas quando uma requisição chega à função e pede revalidação ao proxy de imagens Camo. Uma Action não recebe os reloads feitos pelos leitores; por isso, CI não consegue contar cada visualização. A cópia estática é renovada diariamente como fallback.
 
-## Desenvolvimento e colaboração
+## Desenvolvimento
 
 Python 3.11+ e Node.js 20+. O gerador usa apenas a biblioteca padrão do Python.
 
@@ -62,4 +63,4 @@ npm test
 GITHUB_TOKEN=SEU_TOKEN_DE_LEITURA python3 scripts/generate_card.py
 ```
 
-Não inclua tokens em commits. Para testar a renderização sem rede, veja [as instruções de prévia](docs/CUSTOMIZATION.md#prévia-local). Correções e melhorias são bem-vindas: [como contribuir](CONTRIBUTING.md).
+Os secrets são opcionais e só são necessários para os dados privados descritos acima. Não inclua tokens em commits. Para gerar uma prévia sem consultar APIs, veja [Prévia local](docs/CUSTOMIZATION.md#prévia-local).
