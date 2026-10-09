@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="480" height="496" viewBox="0 0 480 496" role="img" aria-labelledby="title desc" data-visits="">
-<title id="title">Guilherme Beserra · ATIVIDADE NO GITHUB</title><desc id="desc">Calendário inclui contribuições privadas anônimas.</desc>
+<title id="title">Guilherme Beserra · ACTIVIDAD EN GITHUB</title><desc id="desc">El calendario incluye actividad privada anónima.</desc>
 <defs>
   <linearGradient id="back" x2="1" y2="1"><stop stop-color="#0b2431"/><stop offset="1" stop-color="#10182c"/></linearGradient>
   <linearGradient id="glow"><stop stop-color="#56e4c5"/><stop offset="1" stop-color="#8ba6ff"/></linearGradient>
@@ -10,29 +10,29 @@
 <path d="M410 -38a106 106 0 1 0 0 212a106 106 0 1 0 0-212z" fill="none" stroke="#63e6c8" stroke-opacity=".08" stroke-width="30" clip-path="url(#clip)"/>
 <g font-family="DejaVu Sans, Segoe UI, Arial, sans-serif">
 <rect x="24" y="23" width="8" height="22" rx="4" fill="#56e4c5"/>
-<text x="44" y="41" fill="#e4f3f2" font-size="18" font-weight="700">ATIVIDADE NO GITHUB</text>
+<text x="44" y="41" fill="#e4f3f2" font-size="18" font-weight="700">ACTIVIDAD EN GITHUB</text>
 <text x="24" y="82" fill="#93b0ba" font-size="15">Guilherme Beserra</text>
 <text x="24" y="145" fill="#f4faf9" font-size="55" font-weight="700">422</text>
-<text x="24" y="170" fill="#a5c4c8" font-size="16">contribuições desde 2024</text>
+<text x="24" y="170" fill="#a5c4c8" font-size="16">contribuciones desde 2024</text>
 <text x="456" y="127" text-anchor="end" fill="#56e4c5" font-size="35" font-weight="700">380</text>
-<text x="456" y="153" text-anchor="end" fill="#a5c4c8" font-size="16">em 2026</text>
+<text x="456" y="153" text-anchor="end" fill="#a5c4c8" font-size="16">en 2026</text>
 <path d="M24 194H456" stroke="#294456" opacity=".7"/>
 <text x="24" y="220" fill="#92b5c1" font-size="13" font-weight="700" letter-spacing="1.3">COMMITS PÚBLICOS</text>
 <rect x="24" y="238" width="209" height="81" rx="13" fill="#183243"/>
 <rect x="247" y="238" width="209" height="81" rx="13" fill="#183243"/>
 <text x="39" y="281" fill="#f4faf9" font-size="34" font-weight="700">144</text>
-<text x="39" y="306" fill="#a5c4c8" font-size="14">todo o período</text>
+<text x="39" y="306" fill="#a5c4c8" font-size="14">todo el período</text>
 <text x="262" y="281" fill="#f4faf9" font-size="34" font-weight="700">111</text>
 <text x="262" y="306" fill="#a5c4c8" font-size="14">2026</text>
 <text x="24" y="356" fill="#ffca84" font-size="24" font-weight="700">40</text>
-<text x="24" y="378" fill="#a5c4c8" font-size="13">estrelas</text>
+<text x="24" y="378" fill="#a5c4c8" font-size="13">estrellas</text>
 <text x="184" y="356" fill="#8ba6ff" font-size="24" font-weight="700">2</text>
 <text x="184" y="378" fill="#a5c4c8" font-size="13">PRs</text>
 <text x="344" y="356" fill="#dc9bff" font-size="24" font-weight="700">0</text>
-<text x="344" y="378" fill="#a5c4c8" font-size="13">issues</text>
+<text x="344" y="378" fill="#a5c4c8" font-size="13">incidencias</text>
 <rect x="24" y="398" width="432" height="49" rx="12" fill="#164c50"/>
 <circle cx="45" cy="422" r="6" fill="#56e4c5"/>
-<text x="62" y="428" fill="#d4eeee" font-size="17">visitas ao perfil</text>
+<text x="62" y="428" fill="#d4eeee" font-size="17">visitas al perfil</text>
 <text id="visits-value" x="438" y="429" text-anchor="end" fill="#f4faf9" font-size="26" font-weight="700">—</text>
-<text x="24" y="475" fill="#95acb8" font-size="11">Calendário inclui contribuições privadas anônimas.</text></g>
+<text x="24" y="475" fill="#95acb8" font-size="11">El calendario incluye actividad privada anónima.</text></g>
 </svg>

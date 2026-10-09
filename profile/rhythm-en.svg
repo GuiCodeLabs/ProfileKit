@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="280" viewBox="0 0 480 280" role="img" aria-labelledby="title desc">
+<title id="title">Guilherme Beserra · Contribution rhythm</title><desc id="desc">Activity from the GitHub contribution calendar</desc>
+<defs>
+  <linearGradient id="back" x2="1" y2="1"><stop stop-color="#0b2431"/><stop offset="1" stop-color="#10182c"/></linearGradient>
+  <linearGradient id="glow"><stop stop-color="#56e4c5"/><stop offset="1" stop-color="#8ba6ff"/></linearGradient>
+  <clipPath id="clip"><rect width="480" height="100%" rx="22"/></clipPath>
+</defs>
+<rect width="480" height="280" rx="22" fill="url(#back)"/>
+<path d="M0 58H480" stroke="#294456" opacity=".7"/>
+<path d="M410 -38a106 106 0 1 0 0 212a106 106 0 1 0 0-212z" fill="none" stroke="#63e6c8" stroke-opacity=".08" stroke-width="30" clip-path="url(#clip)"/>
+<g font-family="DejaVu Sans, Segoe UI, Arial, sans-serif">
+<rect x="24" y="23" width="8" height="22" rx="4" fill="#ffca84"/>
+<text x="44" y="41" fill="#e4f3f2" font-size="21" font-weight="700">Contribution rhythm</text>
+<rect x="24" y="65" width="209" height="87" rx="13" fill="#183243"/>
+<rect x="247" y="65" width="209" height="87" rx="13" fill="#183243"/>
+<text x="41" y="114" fill="#56e4c5" font-size="36" font-weight="700">2</text>
+<text x="41" y="139" fill="#c4d7d9" font-size="14">current streak · days</text>
+<text x="264" y="114" fill="#ffca84" font-size="36" font-weight="700">6</text>
+<text x="264" y="139" fill="#c4d7d9" font-size="14">longest streak · days</text>
+<text x="24" y="177" fill="#a5c4c8" font-size="15">Last 35 days</text>
+<rect x="24.0" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="36.4" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="48.8" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="61.2" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="73.6" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="86.0" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="98.4" y="228" width="7.5" height="3" rx="3" fill="#56e4c5"/><rect x="110.8" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="123.2" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="135.6" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="148.0" y="228" width="7.5" height="3" rx="3" fill="#56e4c5"/><rect x="160.4" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="172.8" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="185.2" y="228" width="7.5" height="3" rx="3" fill="#56e4c5"/><rect x="197.6" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="210.0" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="222.4" y="219" width="7.5" height="12" rx="3" fill="#56e4c5"/><rect x="234.8" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="247.2" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="259.6" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="272.0" y="179" width="7.5" height="52" rx="3" fill="#56e4c5"/><rect x="284.4" y="228" width="7.5" height="3" rx="3" fill="#56e4c5"/><rect x="296.8" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="309.2" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="321.6" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="334.0" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="346.4" y="219" width="7.5" height="12" rx="3" fill="#56e4c5"/><rect x="358.8" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="371.2" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="383.6" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="396.0" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="408.4" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="420.8" y="228" width="7.5" height="3" rx="3" fill="#375363"/><rect x="433.2" y="228" width="7.5" height="3" rx="3" fill="#56e4c5"/><rect x="445.6" y="221" width="7.5" height="10" rx="3" fill="#56e4c5"/>
+<text x="24" y="260" fill="#95acb8" font-size="12">Activity from the GitHub contribution calendar</text></g>
+</svg>

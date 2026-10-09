@@ -1,0 +1,117 @@
+{
+  "username": "GuiCodeLabs",
+  "name": "Guilherme Beserra",
+  "first_year": 2024,
+  "year": 2026,
+  "contributions_all": 422,
+  "contributions_year": 380,
+  "commits_all": 144,
+  "commits_year": 111,
+  "restricted_all": 252,
+  "stars": 40,
+  "prs": 2,
+  "issues": 0,
+  "visits": null,
+  "languages": [
+    {
+      "name": "Python",
+      "color": "#3572A5",
+      "size": 10514956
+    },
+    {
+      "name": "PHP",
+      "color": "#4F5D95",
+      "size": 1234817
+    },
+    {
+      "name": "HTML",
+      "color": "#e34c26",
+      "size": 285844
+    },
+    {
+      "name": "CSS",
+      "color": "#663399",
+      "size": 146361
+    },
+    {
+      "name": "JavaScript",
+      "color": "#f1e05a",
+      "size": 128607
+    },
+    {
+      "name": "PowerShell",
+      "color": "#012456",
+      "size": 25697
+    },
+    {
+      "name": "Kotlin",
+      "color": "#A97BFF",
+      "size": 15117
+    },
+    {
+      "name": "Java",
+      "color": "#b07219",
+      "size": 11177
+    },
+    {
+      "name": "Dockerfile",
+      "color": "#384d54",
+      "size": 1739
+    },
+    {
+      "name": "Batchfile",
+      "color": "#C1F12E",
+      "size": 1393
+    },
+    {
+      "name": "C",
+      "color": "#555555",
+      "size": 610
+    },
+    {
+      "name": "Shell",
+      "color": "#89e051",
+      "size": 551
+    }
+  ],
+  "current_streak": 2,
+  "longest_streak": 6,
+  "recent_days": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    4,
+    0,
+    0,
+    27,
+    0,
+    0,
+    0,
+    116,
+    5,
+    0,
+    0,
+    0,
+    0,
+    27,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    7,
+    22
+  ],
+  "generated_at": "2026-10-09T02:49:14+00:00"
+}
