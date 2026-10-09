@@ -3,6 +3,7 @@
 
 import argparse
 import json
+from dataclasses import fields
 from pathlib import Path
 
 from generate_card import (SUPPORTED_LOCALES, Language, Stats, output_name,
@@ -18,10 +19,12 @@ def main() -> None:
     data.pop("generated_at", None)
     data["languages"] = tuple(Language(**item) for item in data["languages"])
     data["recent_days"] = tuple(data["recent_days"])
-    # Older public snapshots may still contain the removed private-count fields.
-    data.pop("restricted_all", None)
-    data.pop("restricted_year", None)
+    # Older public snapshots may include visitor and all-time fields no longer rendered.
+    fields_in_card = {field.name for field in fields(Stats)}
+    data = {key: value for key, value in data.items() if key in fields_in_card}
     data.setdefault("languages_include_private", False)
+    data.setdefault("repositories_year", 0)
+    data.setdefault("contributions_include_private", False)
     stats = Stats(**data)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     for locale in SUPPORTED_LOCALES:

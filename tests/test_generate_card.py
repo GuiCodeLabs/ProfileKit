@@ -16,7 +16,7 @@ spec.loader.exec_module(card)
 
 
 class CardTests(unittest.TestCase):
-    def test_current_year_total_and_public_commits_remain_distinct(self):
+    def test_current_year_contributions_and_public_commits_remain_distinct(self):
         now = datetime(2026, 10, 9, 2, 20, tzinfo=timezone.utc)
         config = {"username": "GuiCodeLabs", "display_name": "Gui & Code",
                   "exclude_repositories": ["profile"]}
@@ -52,9 +52,9 @@ class CardTests(unittest.TestCase):
             }}
 
         with patch.object(card, "graphql", side_effect=graphql):
-            stats = card.collect_stats("test-token", config, now, 7)
-        self.assertEqual((stats.contributions_all, stats.contributions_year), (413, 113))
-        self.assertEqual((stats.commits_all, stats.commits_year), (141, 61))
+            stats = card.collect_stats("test-token", config, now)
+        self.assertEqual(stats.contributions_year, 113)
+        self.assertEqual(stats.commits_year, 61)
         self.assertEqual(stats.repositories_year, 8)
         self.assertFalse(stats.contributions_include_private)
         self.assertFalse(stats.languages_include_private)
@@ -63,8 +63,6 @@ class CardTests(unittest.TestCase):
         self.assertEqual(stats.stars, 40)
         svg = card.render_stats(stats, "pt-BR")
         ET.fromstring(svg)
-        self.assertIn('data-visits="7"', svg)
-        self.assertIn('id="visits-value"', svg)
         self.assertIn("Gui &amp; Code", svg)
         self.assertIn(">113</text>", svg)
         self.assertNotIn(">413</text>", svg)
@@ -72,16 +70,18 @@ class CardTests(unittest.TestCase):
         self.assertIn(">8</text>", svg)
         self.assertIn('viewBox="0 0 420 290"', svg)
         self.assertNotIn("Contribuições privadas anônimas", svg)
-        self.assertNotIn("Contribuições · todo o período", svg)
+        self.assertNotIn("todo o período", svg)
         self.assertNotIn("Atividade privada aparece", svg)
         self.assertIn("Commits visíveis · 2026", svg)
         self.assertIn("Repositórios públicos · 2026", svg)
         self.assertIn("Contribuições · 2026", svg)
-        self.assertEqual(svg.count('<svg x="'), 8)
+        self.assertIn('width="48" height="34"', svg)
+        self.assertIn("B−", svg)
+        self.assertEqual(svg.count('<svg x="'), 7)
 
         for locale, expected, year_commits in (
-            ("en", "GitHub statistics", "Visible commits · 2026"),
-            ("es", "Estadísticas de GitHub", "Commits visibles · 2026"),
+            ("en", "GitHub status", "Visible commits · 2026"),
+            ("es", "Estado de GitHub", "Commits visibles · 2026"),
         ):
             localized_stats = card.render_stats(stats, locale)
             self.assertIn(expected, localized_stats)
@@ -106,7 +106,7 @@ class CardTests(unittest.TestCase):
         }
         private = {
             "repositories": {"nodes": [
-                {"name": "secret-project", "isFork": False, "isArchived": False,
+                {"name": "secret-project", "stargazerCount": 0, "isFork": False, "isArchived": False,
                  "languages": {"edges": [
                      {"size": 300, "node": {"name": "Python", "color": "#3572A5"}},
                      {"size": 700, "node": {"name": "Rust", "color": "#dea584"}},
@@ -128,7 +128,7 @@ class CardTests(unittest.TestCase):
             }}
 
         with patch.object(card, "graphql", side_effect=graphql):
-            stats = card.collect_stats("public-token", {"username": "GuiCodeLabs"}, now, 4,
+            stats = card.collect_stats("public-token", {"username": "GuiCodeLabs"}, now,
                                        private_repositories_token="private-read-token")
 
         self.assertTrue(stats.languages_include_private)
@@ -160,7 +160,7 @@ class CardTests(unittest.TestCase):
 
         with patch.object(card, "graphql", side_effect=graphql):
             stats = card.collect_stats(
-                "public-token", {"username": "GuiCodeLabs"}, now, 0,
+                "public-token", {"username": "GuiCodeLabs"}, now,
                 private_contributions_token="read-user-token",
             )
 
@@ -170,9 +170,9 @@ class CardTests(unittest.TestCase):
 
     def test_language_grid_reads_left_to_right_by_size(self):
         stats = card.Stats(
-            username="GuiCodeLabs", name="Gui", first_year=2024, year=2026,
-            contributions_all=10, contributions_year=4, commits_all=2, commits_year=1,
-            stars=0, prs=0, issues=0, visits=None,
+            username="GuiCodeLabs", name="Gui", year=2026,
+            contributions_year=4, commits_year=1,
+            stars=0, prs=0, issues=0,
             languages=(card.Language("Python", "#3572A5", 600),
                        card.Language("PHP", "#4F5D95", 250),
                        card.Language("HTML", "#e34c26", 100),
@@ -198,52 +198,48 @@ class CardTests(unittest.TestCase):
 
     def test_rhythm_card_has_more_space_for_a_clear_recent_activity_axis(self):
         stats = card.Stats(
-            username="GuiCodeLabs", name="Gui", first_year=2024, year=2026,
-            contributions_all=10, contributions_year=4, commits_all=2, commits_year=1,
-            stars=0, prs=0, issues=0, visits=None, languages=(),
+            username="GuiCodeLabs", name="Gui", year=2026,
+            contributions_year=4, commits_year=1,
+            stars=0, prs=0, issues=0, languages=(),
             current_streak=2, longest_streak=4, recent_days=(0,) * 34 + (4,),
         )
         desktop = card.render_rhythm(stats, "pt-BR")
         mobile = card.render_rhythm(stats, "pt-BR", mobile=True)
         ET.fromstring(desktop)
         ET.fromstring(mobile)
-        self.assertIn('viewBox="0 0 840 256"', desktop)
-        self.assertIn('viewBox="0 0 420 270"', mobile)
-        self.assertIn("Últimos 35 dias · atividade diária", desktop)
-        self.assertIn('stroke-linecap="square"', desktop)
+        self.assertIn('viewBox="0 0 840 290"', desktop)
+        self.assertIn('viewBox="0 0 420 290"', mobile)
+        self.assertIn("Últimos 35 dias", desktop)
+        self.assertIn("Conquistas do ano", desktop)
+        self.assertIn("Sequência atual", desktop)
+        self.assertNotIn("todo o período", desktop)
+        self.assertEqual(desktop.count('width="12" height="12" fill='), 35)
 
-    def test_recent_activity_chart_shows_light_days_and_time_direction(self):
+    def test_recent_activity_uses_square_heatmap_and_localized_labels(self):
         stats = card.Stats(
-            username="GuiCodeLabs", name="Gui", first_year=2024, year=2026,
-            contributions_all=10, contributions_year=4, commits_all=2, commits_year=1,
-            stars=0, prs=0, issues=0, visits=None, languages=(),
+            username="GuiCodeLabs", name="Gui", year=2026,
+            contributions_year=4, commits_year=1,
+            stars=0, prs=0, issues=0, languages=(),
             current_streak=2, longest_streak=4, recent_days=(0, 1, 5, 15, 40, 100),
         )
-        bars = ET.fromstring(
-            f"<svg>{card.recent_bars(stats, 0, 100, 700, 38)}</svg>"
-        ).findall("rect")
-        heights = [int(bar.attrib["height"]) for bar in bars]
-        colors = [bar.attrib["fill"] for bar in bars]
-        self.assertEqual(heights, [3, 5, 8, 15, 24, 38])
-        self.assertEqual(colors, ["#34364c", "#465570", "#5775b4", "#6687ce",
-                                  "#7aa2f7", "#7aa2f7"])
-
         portuguese = card.render_rhythm(stats, "pt-BR")
         english = card.render_rhythm(stats, "en")
         spanish = card.render_rhythm(stats, "es")
         for svg in (portuguese, english, spanish):
             ET.fromstring(svg)
-        self.assertIn("35 dias atrás", portuguese)
+        self.assertIn("mais antigo", portuguese)
         self.assertIn("hoje", portuguese)
-        self.assertIn("35 days ago", english)
+        self.assertIn("oldest", english)
         self.assertIn("today", english)
-        self.assertIn("hace 35 días", spanish)
+        self.assertIn("más antiguo", spanish)
         self.assertIn("hoy", spanish)
 
-    def test_visit_count_uses_last_numeric_text_in_badge(self):
-        svg = b'<svg xmlns="http://www.w3.org/2000/svg"><text>views</text><text>1,234</text><text>1,234</text></svg>'
-        self.assertEqual(card.parse_visit_badge(svg), 1234)
-
+    def test_activity_grade_is_custom_and_uses_annual_contribution_thresholds(self):
+        self.assertEqual(card.activity_grade(0), "D")
+        self.assertEqual(card.activity_grade(100), "B−")
+        self.assertEqual(card.activity_grade(400), "B+")
+        self.assertEqual(card.activity_grade(1500), "A+")
+        self.assertEqual(card.activity_grade(2500), "S")
 
 if __name__ == "__main__":
     unittest.main()

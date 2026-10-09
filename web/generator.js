@@ -25,31 +25,15 @@ export function validateOptions(options) {
   }
   if (!cards.length) return { ok: false, code: "cards" };
 
-  let deploymentUrl = "";
-  if (options.liveViews) {
-    try {
-      const parsed = new URL(String(options.deploymentUrl || "").trim());
-      if (parsed.protocol !== "https:" || parsed.username || parsed.password) {
-        return { ok: false, code: "deployment" };
-      }
-      deploymentUrl = parsed.origin;
-    } catch {
-      return { ok: false, code: "deployment" };
-    }
-  }
-
   const locale = Object.hasOwn(LOCALE_SUFFIX, options.locale) ? options.locale : "pt-BR";
   const format = options.format === "markdown" ? "markdown" : "html";
-  return { ok: true, value: { username, repository, cards, locale, format, liveViews: Boolean(options.liveViews), deploymentUrl } };
+  return { ok: true, value: { username, repository, cards, locale, format } };
 }
 
 function cardUrl(value, card) {
-  if (card === "stats" && value.liveViews) {
-    return `${value.deploymentUrl}/api/card?type=stats&locale=${encodeURIComponent(value.locale)}`;
-  }
   const suffix = LOCALE_SUFFIX[value.locale];
   const file = card === "rhythm" ? `rhythm${suffix}.svg` : `${card}${suffix}.svg`;
-  return `https://raw.githubusercontent.com/${value.username}/${value.repository}/main/profile/${file}`;
+  return `https://raw.githubusercontent.com/${value.username}/${value.repository}/stats-output/profile/${file}`;
 }
 
 function htmlEscape(value) {
@@ -72,7 +56,7 @@ function renderHtml(value) {
   }
   if (value.cards.includes("rhythm")) {
     const suffix = LOCALE_SUFFIX[value.locale];
-    const base = `https://raw.githubusercontent.com/${value.username}/${value.repository}/main/profile/`;
+    const base = `https://raw.githubusercontent.com/${value.username}/${value.repository}/stats-output/profile/`;
     sections.push(`<p align="center">\n  <picture>\n    <source media="(max-width: 600px)" srcset="${htmlEscape(`${base}rhythm-mobile${suffix}.svg`)}" />\n    <img src="${htmlEscape(`${base}rhythm${suffix}.svg`)}" width="840" alt="${htmlEscape(labels.rhythm)}" />\n  </picture>\n</p>`);
   }
   return sections.join("\n\n");
