@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="290" viewBox="0 0 520 290" role="img" aria-labelledby="title desc" data-visits="1">
+  <title id="title">Estatísticas do GitHub de Guilherme Beserra</title>
+  <desc id="desc">Estrelas, commits públicos de todo o período e de 2026, pull requests, issues e visitas ao perfil.</desc>
+  <rect x="0" y="0" width="520" height="290" rx="8" fill="#1a1b27" />
+  <g font-family="Segoe UI, DejaVu Sans, sans-serif">
+    <text x="28" y="37" fill="#70a5fd" font-size="20" font-weight="bold">GitHub de Guilherme Beserra</text>
+    <path d="M28 51 H492" stroke="#34364e" stroke-width="1" />
+    <text x="28" y="82" fill="#bb9af7" font-size="20">★</text><text x="60" y="82" fill="#38bdae" font-size="16">Estrelas recebidas</text><text x="504" y="82" fill="#38bdae" font-size="17" font-weight="bold" text-anchor="end">40</text><text x="28" y="114" fill="#bb9af7" font-size="20">↻</text><text x="60" y="114" fill="#38bdae" font-size="16">Commits · todo o período</text><text x="504" y="114" fill="#38bdae" font-size="17" font-weight="bold" text-anchor="end">141</text><text x="28" y="146" fill="#bb9af7" font-size="20">↻</text><text x="60" y="146" fill="#38bdae" font-size="16">Commits · 2026</text><text x="504" y="146" fill="#38bdae" font-size="17" font-weight="bold" text-anchor="end">108</text><text x="28" y="178" fill="#bb9af7" font-size="20">⑂</text><text x="60" y="178" fill="#38bdae" font-size="16">Pull requests</text><text x="504" y="178" fill="#38bdae" font-size="17" font-weight="bold" text-anchor="end">2</text><text x="28" y="210" fill="#bb9af7" font-size="20">!</text><text x="60" y="210" fill="#38bdae" font-size="16">Issues</text><text x="504" y="210" fill="#38bdae" font-size="17" font-weight="bold" text-anchor="end">0</text><text x="28" y="242" fill="#bb9af7" font-size="20">◉</text><text x="60" y="242" fill="#38bdae" font-size="16">Visitas ao perfil</text><text x="504" y="242" fill="#38bdae" font-size="17" font-weight="bold" text-anchor="end">1</text>
+    <text x="28" y="281" fill="#9aa5ce" font-size="11">Commits públicos · Atualizado em 08/10/2026 23:22 BRT</text>
+  </g>
+</svg>
