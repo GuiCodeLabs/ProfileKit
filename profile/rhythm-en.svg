@@ -5,10 +5,10 @@
 <rect x="50" y="16" width="11" height="3" rx="1.5" fill="#bb9af7"/>
 <path d="M22 60H818" stroke="#34364c"/>
 <g font-family="DejaVu Sans, Segoe UI, Arial, sans-serif">
-<text x="22" y="45" fill="#7aa2f7" font-size="20" font-weight="700">Contribution rhythm</text>
+<svg x="22" y="27" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bb9af7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.2 0 7-2.8 7-6.7 0-3.2-1.7-5.3-4.5-8.3.1 2.2-.7 3.4-1.7 4.1C12.8 7.1 10.9 4.6 8.2 2 8.6 6.8 5 9.4 5 15.1 5 19 7.8 22 12 22Z"/><path d="M12 19c1.5 0 2.5-1 2.5-2.4 0-1.2-.7-2-2.2-3.5-.1 1.2-.6 1.7-1.3 2.1-.1-1.1-.7-2-1.5-2.8-.1 3-1.1 4.1-1.1 5.1 0 1.1 1 1.5 3.6 1.5Z"/></svg><text x="50" y="45" fill="#7aa2f7" font-size="20" font-weight="700">Contribution rhythm</text>
 <path d="M280 75V157M560 75V157" stroke="#34364c"/>
-<text x="140" y="113" text-anchor="middle" fill="#7aa2f7" font-size="45" font-weight="700">427</text>
-<text x="140" y="138" text-anchor="middle" fill="#9ecec5" font-size="15">All contributions</text>
+<text x="140" y="113" text-anchor="middle" fill="#7aa2f7" font-size="45" font-weight="700">429</text>
+<text x="140" y="138" text-anchor="middle" fill="#9ecec5" font-size="15">Contributions · all time</text>
 <text x="140" y="157" text-anchor="middle" fill="#8994ad" font-size="12">since 2024</text>
 <text x="420" y="113" text-anchor="middle" fill="#bb9af7" font-size="45" font-weight="700">3</text>
 <text x="420" y="138" text-anchor="middle" fill="#9ecec5" font-size="15">Current streak · days</text>
