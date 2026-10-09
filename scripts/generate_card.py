@@ -310,7 +310,7 @@ def render_stats(stats: Stats, locale: str) -> str:
 <circle cx="45" cy="422" r="6" fill="#56e4c5"/>
 <text x="62" y="428" fill="#d4eeee" font-size="17">{labels['visits']}</text>
 <text id="visits-value" x="438" y="429" text-anchor="end" fill="#f4faf9" font-size="26" font-weight="700">{fmt(stats.visits, locale)}</text>
-<text x="24" y="475" fill="#95acb8" font-size="11">{html.escape(notes)}</text>'''
+<text x="24" y="475" fill="#95acb8" font-size="13">{html.escape(notes)}</text>'''
     return svg_shell(f"{stats.name} · {labels['activity']}", notes, body, 496,
                      f' data-visits="{stats.visits if stats.visits is not None else ""}"')
 
@@ -347,7 +347,7 @@ def render_languages(stats: Stats, locale: str) -> str:
                      f'<text x="448" y="{y}" text-anchor="end" fill="#f4faf9" font-size="18" font-weight="700">{fraction * 100:.1f}%</text>')
     else:
         body += f'<text x="24" y="168" fill="#c1d0d5" font-size="16">{labels["no_languages"]}</text>'
-    body += f'<text x="24" y="361" fill="#95acb8" font-size="12">{labels["lang_note"]}</text>'
+    body += f'<text x="24" y="361" fill="#95acb8" font-size="13">{labels["lang_note"]}</text>'
     return svg_shell(f"{stats.name} · {labels['languages']}", labels["lang_note"], body, 382)
 
 
@@ -371,7 +371,7 @@ def render_rhythm(stats: Stats, locale: str) -> str:
 <text x="264" y="139" fill="#c4d7d9" font-size="14">{labels['best']} · {labels['days']}</text>
 <text x="24" y="177" fill="#a5c4c8" font-size="15">{labels['last_days']}</text>
 {''.join(bars)}
-<text x="24" y="260" fill="#95acb8" font-size="12">{labels['rhythm_note']}</text>'''
+<text x="24" y="260" fill="#95acb8" font-size="13">{labels['rhythm_note']}</text>'''
     return svg_shell(f"{stats.name} · {labels['rhythm']}", labels["rhythm_note"], body, 280)
 
 
@@ -383,7 +383,6 @@ def output_name(kind: str, locale: str) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path("profile-card.json"))
-    parser.add_argument("--username", help="Override username in profile-card.json")
     parser.add_argument("--output-dir", type=Path, default=Path("profile"))
     parser.add_argument("--refresh-visits", action="store_true", help="Read visitor badge once (increments it)")
     args = parser.parse_args()
@@ -391,8 +390,6 @@ def main() -> None:
     if not token:
         raise SystemExit("GITHUB_TOKEN is required; GitHub Actions supplies a repository-scoped token")
     config = json.loads(args.config.read_text(encoding="utf-8"))
-    if args.username:
-        config["username"] = args.username
     if not re.fullmatch(r"[a-zA-Z0-9-]{1,39}", config["username"]):
         raise SystemExit("Invalid GitHub username")
     args.output_dir.mkdir(parents=True, exist_ok=True)

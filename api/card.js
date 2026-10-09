@@ -29,7 +29,8 @@ export default async function handler(request, response) {
   const url = new URL(request.url, "https://profile-card.invalid");
   const kind = url.searchParams.get("type") || "stats";
   const locale = url.searchParams.get("locale") || "pt-BR";
-  if (!CARD_TYPES.has(kind) || !Object.hasOwn(LOCALES, locale)) {
+  if ([...url.searchParams.keys()].some(key => !["type", "locale"].includes(key)) ||
+      !CARD_TYPES.has(kind) || !Object.hasOwn(LOCALES, locale)) {
     return response.status(400).send("Invalid card type or locale");
   }
   const file = `${kind}${LOCALES[locale]}.svg`;

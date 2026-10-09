@@ -1,5 +1,7 @@
 # GitHub Profile Card
 
+[English documentation](README.en.md) · Português abaixo
+
 Cartões SVG originais para mostrar atividade, linguagens e sequência de contribuições de um perfil GitHub. Este repositório gera os cartões do [GuiCodeLabs](https://github.com/GuiCodeLabs) e pode ser adaptado para qualquer usuário.
 
 <p align="center"><img src="https://guicodelabs-profile-card.vercel.app/api/card?type=stats&amp;locale=pt-BR" width="520" alt="Atividade no GitHub de Guilherme Beserra" /></p>
