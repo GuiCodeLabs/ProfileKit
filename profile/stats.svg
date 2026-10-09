@@ -12,17 +12,17 @@
 <rect x="24" y="23" width="8" height="22" rx="4" fill="#56e4c5"/>
 <text x="44" y="41" fill="#e4f3f2" font-size="18" font-weight="700">ATIVIDADE NO GITHUB</text>
 <text x="24" y="82" fill="#93b0ba" font-size="15">Guilherme Beserra</text>
-<text x="24" y="145" fill="#f4faf9" font-size="55" font-weight="700">424</text>
+<text x="24" y="145" fill="#f4faf9" font-size="55" font-weight="700">425</text>
 <text x="24" y="170" fill="#a5c4c8" font-size="16">contribuições desde 2024</text>
-<text x="456" y="127" text-anchor="end" fill="#56e4c5" font-size="35" font-weight="700">382</text>
+<text x="456" y="127" text-anchor="end" fill="#56e4c5" font-size="35" font-weight="700">383</text>
 <text x="456" y="153" text-anchor="end" fill="#a5c4c8" font-size="16">em 2026</text>
 <path d="M24 194H456" stroke="#294456" opacity=".7"/>
 <text x="24" y="220" fill="#92b5c1" font-size="13" font-weight="700" letter-spacing="1.3">COMMITS PÚBLICOS</text>
 <rect x="24" y="238" width="209" height="81" rx="13" fill="#183243"/>
 <rect x="247" y="238" width="209" height="81" rx="13" fill="#183243"/>
-<text x="39" y="281" fill="#f4faf9" font-size="34" font-weight="700">146</text>
+<text x="39" y="281" fill="#f4faf9" font-size="34" font-weight="700">147</text>
 <text x="39" y="306" fill="#a5c4c8" font-size="14">todo o período</text>
-<text x="262" y="281" fill="#f4faf9" font-size="34" font-weight="700">113</text>
+<text x="262" y="281" fill="#f4faf9" font-size="34" font-weight="700">114</text>
 <text x="262" y="306" fill="#a5c4c8" font-size="14">2026</text>
 <text x="24" y="356" fill="#ffca84" font-size="24" font-weight="700">40</text>
 <text x="24" y="378" fill="#a5c4c8" font-size="13">estrelas</text>
@@ -34,5 +34,5 @@
 <circle cx="45" cy="422" r="6" fill="#56e4c5"/>
 <text x="62" y="428" fill="#d4eeee" font-size="17">visitas ao perfil</text>
 <text id="visits-value" x="438" y="429" text-anchor="end" fill="#f4faf9" font-size="26" font-weight="700">4</text>
-<text x="24" y="475" fill="#95acb8" font-size="11">Calendário inclui contribuições privadas anônimas.</text></g>
+<text x="24" y="475" fill="#95acb8" font-size="13">Calendário inclui contribuições privadas anônimas.</text></g>
 </svg>
