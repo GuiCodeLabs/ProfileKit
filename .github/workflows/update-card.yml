@@ -15,16 +15,21 @@ on:
     branches: [main]
     paths:
       - scripts/generate_card.py
+      - scripts/preview.py
       - api/card.js
       - tests/**
+      - package.json
       - profile-card.json
       - .github/workflows/update-card.yml
   pull_request:
     paths:
       - scripts/generate_card.py
+      - scripts/preview.py
       - api/card.js
       - tests/**
+      - package.json
       - profile-card.json
+      - profile/**
       - .github/workflows/update-card.yml
 
 permissions:
@@ -35,8 +40,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Verificar sintaxe Python
+        run: python3 -m py_compile scripts/generate_card.py scripts/preview.py
       - run: python3 -m unittest discover -s tests -v
       - run: npm test
+      - name: Renderizar prévia com o snapshot do perfil
+        run: python3 scripts/preview.py --data profile/data.json --output-dir "$RUNNER_TEMP/profile-card-preview"
 
   update:
     if: github.event_name != 'pull_request'

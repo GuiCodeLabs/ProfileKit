@@ -16,7 +16,8 @@ test("only the visit field is updated in the card", () => {
 
 test("unknown query parameters are rejected before calling external services", async () => {
   const response = {
-    code: null, body: null,
+    code: null, body: null, headers: {},
+    setHeader(key, value) { this.headers[key] = value; return this; },
     status(code) { this.code = code; return this; },
     send(body) { this.body = body; return this; },
   };
@@ -25,31 +26,48 @@ test("unknown query parameters are rejected before calling external services", a
   assert.equal(response.body, "Invalid card type or locale");
 });
 
-test("each origin request fetches the visit count and sends an uncacheable SVG", async () => {
+test("each origin request bypasses caches and asks GitHub Camo to revalidate the image", async () => {
   const previousFetch = globalThis.fetch;
   const requested = [];
-  globalThis.fetch = async url => {
-    requested.push(url);
+  let badgeCount = 24;
+  globalThis.fetch = async (url, options) => {
+    requested.push({ url, options });
     return {
       ok: true,
       text: async () => url.includes("komarev.com")
-        ? '<svg><text>views</text><text>25</text></svg>'
+        ? `<svg><text>views</text><text>${++badgeCount}</text></svg>`
         : '<svg data-visits="3"><text id="visits-value">3</text></svg>',
     };
   };
-  const response = {
+  const makeResponse = () => ({
     code: null, body: null, headers: {},
     setHeader(key, value) { this.headers[key] = value; return this; },
     status(code) { this.code = code; return this; },
     send(body) { this.body = body; return this; },
-  };
+  });
   try {
-    await handler({ method: "GET", url: "/api/card?type=stats&locale=pt-BR" }, response);
-    assert.equal(response.code, 200);
-    assert.equal(response.headers["Cache-Control"], "no-store, max-age=0");
-    assert.equal(response.headers["CDN-Cache-Control"], "no-store");
-    assert.equal(requested.length, 2);
-    assert.match(response.body, /id="visits-value">25<\/text>/);
+    const responses = [];
+    for (let visit = 0; visit < 2; visit += 1) {
+      const response = makeResponse();
+      await handler({ method: "GET", url: "/api/card?type=stats&locale=pt-BR" }, response);
+      responses.push(response);
+      assert.equal(response.code, 200);
+      assert.equal(response.headers["Cache-Control"], "no-cache, no-store, max-age=0, must-revalidate");
+      assert.equal(response.headers["CDN-Cache-Control"], "no-store");
+      assert.equal(response.headers["Vercel-CDN-Cache-Control"], "no-store");
+      assert.equal(response.headers.Pragma, "no-cache");
+      assert.equal(response.headers.Expires, "0");
+    }
+    assert.equal(requested.length, 4);
+    for (const request of requested) {
+      assert.equal(request.options.cache, "no-store");
+      assert.deepEqual(request.options.headers, {
+        "Cache-Control": "no-cache, no-store",
+        Pragma: "no-cache",
+      });
+    }
+    assert.match(responses[0].body, /id="visits-value">25<\/text>/);
+    assert.match(responses[1].body, /id="visits-value">26<\/text>/);
   } finally {
     globalThis.fetch = previousFetch;
   }

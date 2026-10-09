@@ -2,7 +2,7 @@
 
 [English](README.en.md) · [Licença MIT](LICENSE)
 
-Três cartões SVG para apresentar **contribuições, linguagens e sequências** de um perfil GitHub. Design próprio, código aberto e gerador sem dependências externas. Este repositório alimenta o [perfil de Guilherme Beserra](https://github.com/GuiCodeLabs).
+Três cartões SVG para apresentar **contribuições, linguagens e sequências** de um perfil GitHub. O visual usa linhas com ícones familiares e números alinhados, inspirado na leitura rápida de cartões como [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats); os SVGs, ícones e o código deste projeto são próprios. O gerador não tem dependências externas. Este repositório alimenta o [perfil de Guilherme Beserra](https://github.com/GuiCodeLabs).
 
 <p align="center">
   <img src="profile/stats.svg" width="410" alt="Estatísticas de contribuições de GuiCodeLabs" />
@@ -44,13 +44,13 @@ Três cartões SVG para apresentar **contribuições, linguagens e sequências**
 </p>
 ```
 
-O primeiro cartão pode usar o [endpoint dinâmico](docs/CUSTOMIZATION.md#visitas-dentro-do-cartão) para atualizar a contagem de visitas quando o GitHub buscar uma imagem nova.
+O primeiro cartão pode usar o [endpoint dinâmico](docs/CUSTOMIZATION.md#visitas-dentro-do-cartão) para buscar a contagem de visitas quando o GitHub solicitar uma imagem.
 
 ## Atualizações e privacidade
 
-O workflow gera os SVGs a cada **15 minutos**, sujeito aos atrasos do agendador do GitHub, e só grava um commit quando algum dado muda. Uma execução diária atualiza o valor de visitas da cópia estática. O README deste repositório usa a cópia estática, para não somar suas visitas ao contador do perfil de Guilherme.
+O workflow testa o código em pushes e pull requests; a atualização de métricas gera SVGs a cada **15 minutos**, sujeita a atrasos do agendador do GitHub, e só grava um commit quando algum dado muda. Uma execução diária atualiza o valor de visitas da cópia estática. O README deste repositório usa a cópia estática, para não somar suas visitas ao contador do perfil de Guilherme.
 
-O GitHub protege imagens externas com um proxy que pode manter cópias em cache. Mesmo com o endpoint sem cache no Vercel, **não dá para garantir uma visita adicional a cada reload** no GitHub. A API pública tampouco separa quantos eventos privados anônimos foram especificamente commits ou PRs; mostramos a contagem agregada fielmente.
+O endpoint dinâmico envia `Cache-Control: no-cache` para pedir que o proxy de imagens do GitHub (Camo) revalide a imagem, além de `no-store` para evitar cache no Vercel. Cada requisição que chega à função consulta o contador; o GitHub ainda controla o próprio proxy, então **não há garantia de uma visita por reload**. Uma Action de CI não recebe os reloads feitos por leitores. A API pública tampouco separa quantos eventos privados anônimos foram especificamente commits ou PRs; mostramos a contagem agregada fielmente.
 
 ## Desenvolvimento e colaboração
 

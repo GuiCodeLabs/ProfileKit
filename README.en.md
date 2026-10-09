@@ -2,7 +2,7 @@
 
 [Português](README.md) · [MIT License](LICENSE)
 
-Three original SVG cards for **GitHub contributions, languages and streaks**. This project powers [Guilherme Beserra's profile](https://github.com/GuiCodeLabs) and can be copied for your own profile.
+Three original SVG cards for **GitHub contributions, languages and streaks**. The visual uses familiar icons and aligned values for quick scanning, taking inspiration from cards such as [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats); this project's SVGs, icons and code are original. This project powers [Guilherme Beserra's profile](https://github.com/GuiCodeLabs) and can be copied for your own profile.
 
 <p align="center">
   <img src="profile/stats-en.svg" width="410" alt="GitHub statistics" />
@@ -40,7 +40,7 @@ Use filenames without a suffix for Portuguese or with `-es` for Spanish. The lan
 
 ## How it works
 
-GitHub Actions regenerates the cards every **15 minutes**, subject to scheduling delays, and commits only changed metrics. The optional [live SVG endpoint](docs/CUSTOMIZATION.md#visitas-dentro-do-cartão) fetches a new view count whenever it receives an origin request. GitHub's image proxy can still cache images, so **one increment per page reload is not guaranteed**. A daily job refreshes the static fallback.
+GitHub Actions tests pushes and pull requests. A separate scheduled job regenerates cards every **15 minutes**, subject to scheduling delays, and commits only changed metrics. The optional [live SVG endpoint](docs/CUSTOMIZATION.md#visitas-dentro-do-cartão) fetches a view count whenever it receives an origin request. Its `Cache-Control: no-cache` header asks GitHub's Camo image proxy to revalidate, while `no-store` bypasses Vercel caching. GitHub controls its proxy, so **one increment per page reload is not guaranteed**. A daily job refreshes the static fallback. CI cannot detect a reader's image reload.
 
 See [metric definitions](docs/METRICS.md), [customization and troubleshooting](docs/CUSTOMIZATION.md), and [contribution guide](CONTRIBUTING.md). Runs on Python 3.11+ and Node.js 20+; the generator has no package dependencies.
 

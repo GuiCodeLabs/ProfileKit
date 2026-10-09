@@ -64,12 +64,22 @@ class CardTests(unittest.TestCase):
         self.assertIn("Gui &amp; Code", svg)
         self.assertIn("413", svg)
         self.assertIn("141", svg)
-        self.assertIn('viewBox="0 0 420 344"', svg)
-        self.assertIn("Privadas anônimas", svg)
-        self.assertIn("Commits visíveis", svg)
+        self.assertIn('viewBox="0 0 420 360"', svg)
+        self.assertIn("Contribuições privadas anônimas", svg)
+        self.assertIn("Commits visíveis · todo o período", svg)
+        self.assertIn("Commits visíveis · 2026", svg)
+        self.assertIn("Contribuições · todo o período", svg)
+        self.assertIn("Contribuições · 2026", svg)
+        self.assertEqual(svg.count('<svg x="'), 10)
 
-        for locale, expected in (("en", "GitHub statistics"), ("es", "Estadísticas de GitHub")):
-            self.assertIn(expected, card.render_stats(stats, locale))
+        for locale, expected, year_commits in (
+            ("en", "GitHub statistics", "Visible commits · 2026"),
+            ("es", "Estadísticas de GitHub", "Commits visibles · 2026"),
+        ):
+            localized_stats = card.render_stats(stats, locale)
+            self.assertIn(expected, localized_stats)
+            self.assertIn(year_commits, localized_stats)
+            ET.fromstring(localized_stats)
             ET.fromstring(card.render_languages(stats, locale))
             ET.fromstring(card.render_rhythm(stats, locale))
             ET.fromstring(card.render_rhythm(stats, locale, mobile=True))

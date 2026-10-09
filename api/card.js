@@ -4,6 +4,26 @@ const SOURCE_REPOSITORY = process.env.PROFILE_REPOSITORY || "GuiCodeLabs/github-
 const PROFILE_USER = process.env.PROFILE_USER || "GuiCodeLabs";
 const LOCALES = { "pt-BR": "", en: "-en", es: "-es" };
 const CARD_TYPES = new Set(["stats", "languages", "rhythm"]);
+const LIVE_RESPONSE_HEADERS = {
+  "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+  "CDN-Cache-Control": "no-store",
+  "Vercel-CDN-Cache-Control": "no-store",
+  Pragma: "no-cache",
+  Expires: "0",
+};
+const LIVE_REQUEST_HEADERS = { "Cache-Control": "no-cache, no-store", Pragma: "no-cache" };
+
+function disableCaching(response) {
+  for (const [name, value] of Object.entries(LIVE_RESPONSE_HEADERS)) response.setHeader(name, value);
+}
+
+function fetchLive(url, timeoutMs) {
+  return fetch(url, {
+    cache: "no-store",
+    headers: LIVE_REQUEST_HEADERS,
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+}
 
 export function parseVisitsFromSvg(svg) {
   const matches = [...svg.matchAll(/<text\b[^>]*>([\d,]+)<\/text>/g)];
@@ -22,6 +42,7 @@ export function injectVisits(svg, visits, locale) {
 }
 
 export default async function handler(request, response) {
+  disableCaching(response);
   if (request.method !== "GET") {
     response.setHeader("Allow", "GET");
     return response.status(405).end();
@@ -36,14 +57,13 @@ export default async function handler(request, response) {
   const file = `${kind}${LOCALES[locale]}.svg`;
   const source = `https://raw.githubusercontent.com/${SOURCE_REPOSITORY}/main/profile/${file}`;
   try {
-    const upstream = await fetch(source, { cache: "no-store", signal: AbortSignal.timeout(8000) });
+    const upstream = await fetchLive(source, 8000);
     if (!upstream.ok) throw new Error(`SVG source returned ${upstream.status}`);
     let svg = await upstream.text();
     if (kind === "stats") {
       try {
-        const badge = await fetch(
-          `https://komarev.com/ghpvc/?username=${encodeURIComponent(PROFILE_USER)}&style=flat-square`,
-          { cache: "no-store", signal: AbortSignal.timeout(4000) },
+        const badge = await fetchLive(
+          `https://komarev.com/ghpvc/?username=${encodeURIComponent(PROFILE_USER)}&style=flat-square`, 4000,
         );
         if (badge.ok) svg = injectVisits(svg, parseVisitsFromSvg(await badge.text()), locale);
       } catch (error) {
@@ -52,13 +72,10 @@ export default async function handler(request, response) {
     }
     response.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
     response.setHeader("X-Content-Type-Options", "nosniff");
-    // We control origin and Vercel caching; GitHub's own image proxy may still cache.
-    response.setHeader("Cache-Control", "no-store, max-age=0");
-    response.setHeader("CDN-Cache-Control", "no-store");
+    // no-cache asks GitHub Camo to revalidate; no-store also bypasses Vercel's CDN cache.
     return response.status(200).send(svg);
   } catch (error) {
     console.error("Card SVG unavailable:", error);
-    response.setHeader("Cache-Control", "no-store");
     return response.status(503).send("Card temporarily unavailable");
   }
 }

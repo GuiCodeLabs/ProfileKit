@@ -12,9 +12,9 @@ O projeto consulta a API GraphQL do GitHub em cada atualização. As datas e o c
 | Estrelas | Soma de `stargazerCount` dos repositórios públicos próprios, inclusive forks. | Estrelas recebidas, não estrelas dadas a terceiros. |
 | Linguagens | Soma dos bytes das linguagens dos repositórios públicos próprios, excluindo forks, arquivados e nomes configurados. | É uma proporção de bytes, não tempo de trabalho ou experiência. |
 | Sequências | Dias com `contributionCount > 0` no calendário. A sequência atual inclui ontem quando hoje ainda está vazio. | O calendário inclui tipos diferentes de atividade; a maior sequência cobre o histórico disponível. |
-| Visitas | Contagem do serviço Komarev quando uma requisição chega ao contador. | Não mede pessoas únicas. GitHub pode entregar uma imagem em cache em vez de fazer nova requisição. |
+| Visitas | Contagem do serviço Komarev quando a função recebe uma requisição para a imagem. | Não mede pessoas únicas. A resposta pede revalidação com `Cache-Control: no-cache`, mas o proxy Camo do GitHub controla o cache e pode reutilizar uma imagem. |
 
-**Exemplo:** 425 contribuições, 252 privadas anônimas e 147 commits visíveis são números compatíveis. Os 252 eventos privados podem ser commits, PRs e outras atividades, e 147 é apenas uma parte pública do calendário. Não há uma soma válida entre os três que revele “commits privados”.
+**Como ler os números:** o total do calendário reúne diferentes tipos de contribuição; a linha privada é um agregado de atividade sem detalhes; e a linha de commits conta somente os commits acessíveis ao token. Esses indicadores têm escopos diferentes, então não some nem subtraia os valores para estimar “commits privados”.
 
 ## Por que meus commits privados não aparecem separadamente?
 

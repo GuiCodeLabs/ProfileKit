@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="360" viewBox="0 0 420 360" role="img" aria-labelledby="title desc">
+<title id="title">Guilherme Beserra · Linguagens mais usadas</title><desc id="desc">Proporção de bytes de código · não mede experiência</desc>
+<rect x="0.5" y="0.5" width="419" height="359" rx="11" fill="#1a1b28" stroke="#34364c"/>
+<rect x="22" y="16" width="24" height="3" rx="1.5" fill="#7aa2f7"/>
+<rect x="50" y="16" width="11" height="3" rx="1.5" fill="#bb9af7"/>
+<path d="M22 60H398" stroke="#34364c"/>
+<g font-family="DejaVu Sans, Segoe UI, Arial, sans-serif">
+<svg x="22" y="27" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7aa2f7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-2-14-4 16"/></svg>
+<text x="50" y="45" fill="#7aa2f7" font-size="20" font-weight="700">Linguagens mais usadas</text>
+<text x="22" y="82" fill="#9ecec5" font-size="13">Código de repositórios públicos próprios</text>
+<defs><clipPath id="bar"><rect x="22" y="98" width="376" height="14" rx="7"/></clipPath></defs>
+<rect x="22" y="98" width="376" height="14" rx="7" fill="#34364c"/>
+<g clip-path="url(#bar)"><rect x="22.00" y="98" width="319.69" height="14" fill="#3572A5"/><rect x="341.69" y="98" width="37.54" height="14" fill="#4F5D95"/><rect x="379.24" y="98" width="8.69" height="14" fill="#e34c26"/><rect x="387.93" y="98" width="4.45" height="14" fill="#663399"/><rect x="392.38" y="98" width="3.91" height="14" fill="#f1e05a"/><rect x="396.29" y="98" width="1.71" height="14" fill="#e0af68"/></g><circle cx="27" cy="152" r="5" fill="#3572A5"/><text x="40" y="157" fill="#e3e6f2" font-size="14">Python</text><text x="200" y="157" text-anchor="end" fill="#9ecec5" font-size="13">85.0%</text><circle cx="27" cy="201" r="5" fill="#4F5D95"/><text x="40" y="206" fill="#e3e6f2" font-size="14">PHP</text><text x="200" y="206" text-anchor="end" fill="#9ecec5" font-size="13">10.0%</text><circle cx="27" cy="250" r="5" fill="#e34c26"/><text x="40" y="255" fill="#e3e6f2" font-size="14">HTML</text><text x="200" y="255" text-anchor="end" fill="#9ecec5" font-size="13">2.3%</text><circle cx="213" cy="152" r="5" fill="#663399"/><text x="226" y="157" fill="#e3e6f2" font-size="14">CSS</text><text x="386" y="157" text-anchor="end" fill="#9ecec5" font-size="13">1.2%</text><circle cx="213" cy="201" r="5" fill="#f1e05a"/><text x="226" y="206" fill="#e3e6f2" font-size="14">JavaScript</text><text x="386" y="206" text-anchor="end" fill="#9ecec5" font-size="13">1.0%</text><circle cx="213" cy="250" r="5" fill="#e0af68"/><text x="226" y="255" fill="#e3e6f2" font-size="14">Outras</text><text x="386" y="255" text-anchor="end" fill="#9ecec5" font-size="13">0.5%</text><path d="M22 319H398" stroke="#34364c"/><text x="22" y="341" fill="#8994ad" font-size="11">Proporção de bytes de código · não mede experiência</text></g>
+</svg>

@@ -33,7 +33,7 @@ O arquivo `api/card.js` pode ser implantado como Vercel Function. Configure `PRO
 <img src="https://SEU-DEPLOY.vercel.app/api/card?type=stats&amp;locale=pt-BR" width="410" alt="Estatísticas e visitas" />
 ```
 
-A função lê o SVG público e troca apenas o número de visitas após consultar Komarev. O cabeçalho `Cache-Control: no-store` evita cache no endpoint e no CDN do Vercel. O proxy de imagens do GitHub ainda pode servir a imagem guardada: atualizações por reload **não são garantidas**. Não inclua um segundo badge Komarev no mesmo README, ou contará mais requisições do que as visitas reais.
+A função lê o SVG público e troca apenas o número de visitas após consultar [Komarev](https://github.com/antonkomarev/github-profile-views-counter). Ela envia `Cache-Control: no-cache` para pedir revalidação ao proxy de imagens Camo do GitHub, seguindo a [documentação do GitHub](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls), e `no-store` para não guardar a resposta no Vercel. Cada requisição que chega à função consulta o contador; o Camo controla seu próprio proxy, então atualizações por reload **não são garantidas**. O CI não recebe eventos de abertura ou reload do README. Não inclua um segundo badge Komarev no mesmo README, ou contará mais requisições do que as visitas reais.
 
 Na execução diária, a Action consulta Komarev uma vez e preserva esse valor como fallback estático. Essa própria consulta incrementa o número. Se o serviço ficar indisponível, o cartão usa o último número salvo.
 

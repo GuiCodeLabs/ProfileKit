@@ -23,10 +23,11 @@ SUPPORTED_LOCALES = ("pt-BR", "en", "es")
 PALETTE = ("#7aa2f7", "#bb9af7", "#f7768e", "#9d7cd8", "#7dcfff", "#e0af68")
 LABELS = {
     "pt-BR": {
-        "activity": "Estatísticas do GitHub", "total": "Total de contribuições", "year": "Em {year}",
-        "private": "Privadas anônimas", "commits": "Commits visíveis", "stars": "Estrelas",
-        "prs": "PRs", "issues": "Issues", "visits": "Visitas", "since": "desde {year}",
-        "scope": "Calendário: atividade pública + privada anônima",
+        "activity": "Estatísticas do GitHub", "total": "Contribuições · todo o período",
+        "year": "Contribuições · {year}", "private": "Contribuições privadas anônimas",
+        "commits": "Commits visíveis · todo o período", "commits_year": "Commits visíveis · {year}",
+        "stars": "Estrelas", "prs": "Pull requests", "issues": "Issues", "visits": "Visitas do perfil",
+        "since": "desde {year}", "scope": "Atividade privada aparece somente em totais agregados.",
         "languages": "Linguagens mais usadas", "lang_sub": "Código de repositórios públicos próprios",
         "lang_note": "Proporção de bytes de código · não mede experiência",
         "other": "Outras", "no_languages": "Nenhuma linguagem encontrada.",
@@ -34,10 +35,11 @@ LABELS = {
         "days": "dias", "last_days": "Últimos 35 dias", "rhythm_note": "Dados do calendário do GitHub",
     },
     "en": {
-        "activity": "GitHub statistics", "total": "All contributions", "year": "In {year}",
-        "private": "Anonymous private", "commits": "Visible commits", "stars": "Stars",
-        "prs": "PRs", "issues": "Issues", "visits": "Views", "since": "since {year}",
-        "scope": "Calendar: public + anonymous private activity",
+        "activity": "GitHub statistics", "total": "Contributions · all time",
+        "year": "Contributions · {year}", "private": "Anonymous private contributions",
+        "commits": "Visible commits · all time", "commits_year": "Visible commits · {year}",
+        "stars": "Stars", "prs": "Pull requests", "issues": "Issues", "visits": "Profile views",
+        "since": "since {year}", "scope": "Private activity appears only as an aggregate.",
         "languages": "Most used languages", "lang_sub": "Code in owned public repositories",
         "lang_note": "Share of code bytes · not a measure of skill",
         "other": "Other", "no_languages": "No languages found.",
@@ -45,10 +47,11 @@ LABELS = {
         "days": "days", "last_days": "Last 35 days", "rhythm_note": "GitHub contribution calendar data",
     },
     "es": {
-        "activity": "Estadísticas de GitHub", "total": "Contribuciones totales", "year": "En {year}",
-        "private": "Privadas anónimas", "commits": "Commits visibles", "stars": "Estrellas",
-        "prs": "PRs", "issues": "Incidencias", "visits": "Visitas", "since": "desde {year}",
-        "scope": "Calendario: actividad pública + privada anónima",
+        "activity": "Estadísticas de GitHub", "total": "Contribuciones · todo el período",
+        "year": "Contribuciones · {year}", "private": "Contribuciones privadas anónimas",
+        "commits": "Commits visibles · todo el período", "commits_year": "Commits visibles · {year}",
+        "stars": "Estrellas", "prs": "Pull requests", "issues": "Incidencias", "visits": "Visitas del perfil",
+        "since": "desde {year}", "scope": "La actividad privada aparece solo en totales agregados.",
         "languages": "Lenguajes más usados", "lang_sub": "Código de repositorios públicos propios",
         "lang_note": "Proporción de bytes · no mide experiencia",
         "other": "Otros", "no_languages": "No se encontraron lenguajes.",
@@ -248,7 +251,11 @@ def visits_count(username: str, previous: int | None, refresh: bool) -> int | No
         return previous
     url = "https://komarev.com/ghpvc/?" + urllib.parse.urlencode({"username": username, "style": "flat-square"})
     try:
-        request = urllib.request.Request(url, headers={"User-Agent": "github-profile-card"})
+        request = urllib.request.Request(url, headers={
+            "User-Agent": "github-profile-card",
+            "Cache-Control": "no-cache, no-store",
+            "Pragma": "no-cache",
+        })
         with urllib.request.urlopen(request, timeout=15) as response:
             return parse_visit_badge(response.read())
     except (urllib.error.URLError, TimeoutError, ValueError, ET.ParseError) as exc:
@@ -264,7 +271,7 @@ def fmt(value: int | None, locale: str) -> str:
 
 def svg_shell(title: str, description: str, content: str, width: int, height: int,
               extra: str = "") -> str:
-    """Compact cards inspired by the familiar dark palette, with our own layout and SVG."""
+    """Render an original, compact card with a familiar dark statistics-card palette."""
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc"{extra}>
 <title id="title">{html.escape(title)}</title><desc id="desc">{html.escape(description)}</desc>
 <rect x="0.5" y="0.5" width="{width-1}" height="{height-1}" rx="11" fill="#1a1b28" stroke="#34364c"/>
@@ -276,33 +283,55 @@ def svg_shell(title: str, description: str, content: str, width: int, height: in
 '''
 
 
+ICON_PATHS = {
+    "star": '<path d="m12 2.3 2.9 6 6.6.8-4.8 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6-4.8-4.6 6.6-.8 2.9-6Z"/>',
+    "commit": '<circle cx="12" cy="5" r="2.6"/><circle cx="12" cy="19" r="2.6"/><path d="M12 7.6v8.8"/>',
+    "pull": '<circle cx="7" cy="5" r="2.5"/><circle cx="17" cy="19" r="2.5"/><circle cx="17" cy="5" r="2.5"/><path d="M7 7.5v9m10-9v9m-7-7 4 4"/>',
+    "issue": '<circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 4h.01"/>',
+    "calendar": '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 4h2m4 0h2m-8 4h2"/>',
+    "lock": '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/>',
+    "eye": '<path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/>',
+    "code": '<path d="m8 6-6 6 6 6m8-12 6 6-6 6m-2-14-4 16"/>',
+    "flame": '<path d="M12 22c4.2 0 7-2.8 7-6.7 0-3.2-1.7-5.3-4.5-8.3.1 2.2-.7 3.4-1.7 4.1C12.8 7.1 10.9 4.6 8.2 2 8.6 6.8 5 9.4 5 15.1 5 19 7.8 22 12 22Z"/><path d="M12 19c1.5 0 2.5-1 2.5-2.4 0-1.2-.7-2-2.2-3.5-.1 1.2-.6 1.7-1.3 2.1-.1-1.1-.7-2-1.5-2.8-.1 3-1.1 4.1-1.1 5.1 0 1.1 1 1.5 3.6 1.5Z"/>',
+}
+
+
+def svg_icon(name: str, x: int, y: int, color: str, size: int = 18) -> str:
+    """Draw a small original line icon from simple SVG primitives."""
+    if name not in ICON_PATHS:
+        raise ValueError(f"Unknown icon: {name}")
+    return (f'<svg x="{x}" y="{y}" width="{size}" height="{size}" viewBox="0 0 24 24" '
+            f'fill="none" stroke="{color}" stroke-width="1.8" stroke-linecap="round" '
+            f'stroke-linejoin="round" aria-hidden="true">{ICON_PATHS[name]}</svg>')
+
+
 def render_stats(stats: Stats, locale: str) -> str:
     labels = LABELS[locale]
-    body = f'''
-<text x="22" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels['activity']}</text>
-<text x="22" y="113" fill="#e3e6f2" font-size="40" font-weight="700">{fmt(stats.contributions_all, locale)}</text>
-<text x="22" y="136" fill="#9ecec5" font-size="14">{labels['total']}</text>
-<text x="22" y="154" fill="#8994ad" font-size="12">{labels['since'].format(year=stats.first_year)}</text>
-<path d="M208 78V157" stroke="#34364c"/>
-<text x="230" y="113" fill="#7aa2f7" font-size="37" font-weight="700">{fmt(stats.contributions_year, locale)}</text>
-<text x="230" y="138" fill="#9ecec5" font-size="14">{labels['year'].format(year=stats.year)}</text>
-<path d="M22 170H398" stroke="#34364c"/>
-<text x="22" y="196" fill="#9ecec5" font-size="14">{labels['private']}</text>
-<text x="22" y="225" fill="#bb9af7" font-size="26" font-weight="700">{fmt(stats.restricted_all, locale)}</text>
-<text x="230" y="196" fill="#9ecec5" font-size="14">{labels['commits']}</text>
-<text x="230" y="225" fill="#bb9af7" font-size="26" font-weight="700">{fmt(stats.commits_all, locale)}</text>
-<path d="M22 240H398" stroke="#34364c"/>
-<text x="22" y="273" fill="#e3e6f2" font-size="23" font-weight="700">{fmt(stats.stars, locale)}</text>
-<text x="22" y="291" fill="#9ecec5" font-size="12">{labels['stars']}</text>
-<text x="130" y="273" fill="#e3e6f2" font-size="23" font-weight="700">{fmt(stats.prs, locale)}</text>
-<text x="130" y="291" fill="#9ecec5" font-size="12">{labels['prs']}</text>
-<text x="216" y="273" fill="#e3e6f2" font-size="23" font-weight="700">{fmt(stats.issues, locale)}</text>
-<text x="216" y="291" fill="#9ecec5" font-size="12">{labels['issues']}</text>
-<text id="visits-value" x="310" y="273" fill="#e3e6f2" font-size="23" font-weight="700">{fmt(stats.visits, locale)}</text>
-<text x="310" y="291" fill="#9ecec5" font-size="12">{labels['visits']}</text>
-<text x="22" y="326" fill="#8994ad" font-size="11">{labels['scope']}</text>'''
-    return svg_shell(f"{stats.name} · {labels['activity']}", labels["scope"], body,
-                     420, 344, f' data-visits="{stats.visits if stats.visits is not None else ""}"')
+    rows = (
+        ("star", labels["stars"], stats.stars, "#e0af68"),
+        ("commit", labels["commits"], stats.commits_all, "#bb9af7"),
+        ("commit", labels["commits_year"].format(year=stats.year), stats.commits_year, "#bb9af7"),
+        ("pull", labels["prs"], stats.prs, "#bb9af7"),
+        ("issue", labels["issues"], stats.issues, "#f7768e"),
+        ("calendar", labels["total"], stats.contributions_all, "#7aa2f7"),
+        ("calendar", labels["year"].format(year=stats.year), stats.contributions_year, "#7aa2f7"),
+        ("lock", labels["private"], stats.restricted_all, "#bb9af7"),
+        ("eye", labels["visits"], stats.visits, "#7dcfff"),
+    )
+    body = (f'{svg_icon("calendar", 22, 27, "#7aa2f7", 18)}'
+            f'<text x="50" y="43" fill="#7aa2f7" font-size="19" font-weight="700">{labels["activity"]}</text>')
+    body += f'<path d="M22 57H398" stroke="#34364c"/>'
+    for index, (icon, label, value, color) in enumerate(rows):
+        baseline = 82 + index * 28
+        body += svg_icon(icon, 22, baseline - 15, color, 18)
+        value_id = ' id="visits-value"' if icon == "eye" else ""
+        body += (f'<text x="51" y="{baseline}" fill="#9ecec5" font-size="15">{html.escape(label)}</text>'
+                 f'<text{value_id} x="398" y="{baseline}" text-anchor="end" '
+                 f'fill="#7dcfff" font-size="18" font-weight="700">{fmt(value, locale)}</text>')
+    body += f'<path d="M22 319H398" stroke="#34364c"/><text x="22" y="341" fill="#8994ad" font-size="11">{labels["scope"]}</text>'
+    description = f"{stats.name} · {labels['scope']}"
+    return svg_shell(f"{stats.name} · {labels['activity']}", description, body,
+                     420, 360, f' data-visits="{stats.visits if stats.visits is not None else ""}"')
 
 
 def language_rows(stats: Stats, locale: str) -> tuple[list[tuple[str, str, float]], int]:
@@ -320,7 +349,8 @@ def render_languages(stats: Stats, locale: str) -> str:
     labels = LABELS[locale]
     rows, total = language_rows(stats, locale)
     body = f'''
-<text x="22" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels['languages']}</text>
+{svg_icon("code", 22, 27, "#7aa2f7", 18)}
+<text x="50" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels['languages']}</text>
 <text x="22" y="82" fill="#9ecec5" font-size="13">{labels['lang_sub']}</text>
 <defs><clipPath id="bar"><rect x="22" y="98" width="376" height="14" rx="7"/></clipPath></defs>
 <rect x="22" y="98" width="376" height="14" rx="7" fill="#34364c"/>
@@ -334,16 +364,16 @@ def render_languages(stats: Stats, locale: str) -> str:
         body += '</g>'
         for index, (name, color, fraction) in enumerate(rows):
             column, row = divmod(index, 3)
-            x = 22 + column * 206
+            x = 22 + column * 186
             y = 157 + row * 49
             short_name = name if len(name) <= 13 else name[:12] + "…"
             body += (f'<circle cx="{x+5}" cy="{y-5}" r="5" fill="{color}"/>'
                      f'<text x="{x+18}" y="{y}" fill="#e3e6f2" font-size="14">{html.escape(short_name)}</text>'
-                     f'<text x="{x+184}" y="{y}" text-anchor="end" fill="#9ecec5" font-size="13">{fraction * 100:.1f}%</text>')
+                     f'<text x="{x+178}" y="{y}" text-anchor="end" fill="#9ecec5" font-size="13">{fraction * 100:.1f}%</text>')
     else:
         body += f'</g><text x="22" y="173" fill="#e3e6f2" font-size="15">{labels["no_languages"]}</text>'
-    body += f'<path d="M22 302H398" stroke="#34364c"/><text x="22" y="326" fill="#8994ad" font-size="11">{labels["lang_note"]}</text>'
-    return svg_shell(f"{stats.name} · {labels['languages']}", labels["lang_note"], body, 420, 344)
+    body += f'<path d="M22 319H398" stroke="#34364c"/><text x="22" y="341" fill="#8994ad" font-size="11">{labels["lang_note"]}</text>'
+    return svg_shell(f"{stats.name} · {labels['languages']}", labels["lang_note"], body, 420, 360)
 
 
 def recent_bars(stats: Stats, x: float, bottom: int, width: float, height: int) -> str:
@@ -358,7 +388,8 @@ def recent_bars(stats: Stats, x: float, bottom: int, width: float, height: int) 
 
 def render_rhythm(stats: Stats, locale: str, mobile: bool = False) -> str:
     labels = LABELS[locale]
-    header = f'<text x="22" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels["rhythm"]}</text>'
+    header = (f'{svg_icon("flame", 22, 27, "#bb9af7", 18)}'
+              f'<text x="50" y="45" fill="#7aa2f7" font-size="20" font-weight="700">{labels["rhythm"]}</text>')
     if mobile:
         body = f'''
 {header}
