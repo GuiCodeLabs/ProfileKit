@@ -2,15 +2,8 @@ name: Gerar cartões do perfil
 
 on:
   schedule:
-    # Ações agendadas podem atrasar; o intervalo mínimo do GitHub é cinco minutos.
-    - cron: "7,22,37,52 * * * *"
-    - cron: "13 4 * * *" # Apenas esta execução consulta o contador (uma leitura por dia).
+    - cron: "13 4 * * *"
   workflow_dispatch:
-    inputs:
-      refresh_visits:
-        description: "Atualizar também a cópia estática do contador de visitas"
-        type: boolean
-        default: true
   push:
     branches: [main]
     paths:
@@ -19,7 +12,6 @@ on:
       - index.html
       - styles.css
       - web/**
-      - api/card.js
       - tests/**
       - package.json
       - profile-card.json
@@ -31,7 +23,6 @@ on:
       - index.html
       - styles.css
       - web/**
-      - api/card.js
       - tests/**
       - package.json
       - profile-card.json
@@ -71,15 +62,7 @@ jobs:
           PRIVATE_REPOSITORIES_TOKEN: ${{ secrets.PRIVATE_REPOSITORIES_TOKEN }}
           # Optional classic PAT with read:user only for private contribution totals.
           PRIVATE_CONTRIBUTIONS_TOKEN: ${{ secrets.PRIVATE_CONTRIBUTIONS_TOKEN }}
-          EVENT_NAME: ${{ github.event_name }}
-          EVENT_SCHEDULE: ${{ github.event.schedule }}
-          REFRESH_VISITS: ${{ inputs.refresh_visits }}
-        run: |
-          args=()
-          if [[ "$EVENT_SCHEDULE" == "13 4 * * *" || ( "$EVENT_NAME" == "workflow_dispatch" && "$REFRESH_VISITS" == "true" ) ]]; then
-            args+=(--refresh-visits)
-          fi
-          python3 scripts/generate_card.py "${args[@]}"
+        run: python3 scripts/generate_card.py
       - name: Publicar alterações de dados
         run: |
           git add -- profile/data.json profile/*.svg
@@ -87,5 +70,5 @@ jobs:
             git -c user.name='github-actions[bot]' \
               -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
               commit -m 'chore(stats): atualiza cartões do perfil'
-            git push origin HEAD:main
+            git push origin HEAD:stats-output
           fi
