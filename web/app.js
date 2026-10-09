@@ -2,93 +2,112 @@ import { buildReadmeSnippet, detectLocale, validateOptions } from "./generator.j
 
 const TRANSLATIONS = {
   "pt-BR": {
-    navGuide: "Como funciona", navSource: "Código-fonte", languageLabel: "Idioma",
-    eyebrow: "GERADOR OPEN SOURCE · PERFIL GITHUB", heroTitle: "Mostre seu trabalho<br /><span>com clareza.</span>",
-    heroDescription: "Escolha os cartões, confira a prévia e gere um snippet pronto para o README do seu perfil.",
-    privacyLine: "Sem login. Sem tokens no navegador. Seus dados ficam no GitHub.", openSource: "Código aberto",
-    stepConfigure: "CONFIGURE", formTitle: "Seu perfil", usernameLabel: "Usuário do GitHub",
-    usernameHint: "O mesmo nome que aparece em github.com/...", repoLabel: "Repositório dos cartões",
-    formatLabel: "Formato do snippet", htmlOption: "HTML · responsivo", markdownOption: "Markdown · simples",
-    cardsLegend: "Cartões no README", statsOption: "Status do GitHub", statsHint: "Contribuições, commits, estrelas e visitas",
-    languagesOption: "Linguagens", languagesHint: "Distribuição de código por linguagem",
-    rhythmOption: "Ritmo de contribuições", rhythmHint: "Total histórico e sequências",
-    liveLabel: "Contador de visitas via Vercel", liveHint: "Consulta ao receber a imagem; o cache do GitHub ainda pode interferir.",
-    deploymentLabel: "URL do seu deploy Vercel", deploymentHint: "O projeto precisa estar conectado ao seu repositório e configurado para seu perfil.",
-    generateButton: "Gerar snippet", finePrint: "O gerador cria apenas os links. Os cartões são atualizados pela GitHub Action da sua cópia.",
-    stepPreview: "PRÉVIA", previewTitle: "Seu layout", previewLive: "LAYOUT", previewStats: "Status do GitHub",
+    navBuilder: "Gerador", navGuide: "Como usar", navAbout: "Sobre", languageLabel: "Idioma",
+    eyebrow: "CARTÕES OPEN SOURCE PARA GITHUB", heroTitle: "Seu trabalho merece<br /><span>um perfil à altura.</span>",
+    heroDescription: "Monte um README que mostra sua atividade, suas linguagens e seu ritmo em cartões feitos para o seu perfil.",
+    privacyLine: "Sem login e sem tokens no navegador.", dailyLine: "Métricas atualizadas diariamente.", openSource: "Ver no GitHub",
+    stepConfigure: "PERSONALIZE", formTitle: "Seu README", usernameLabel: "Usuário do GitHub",
+    usernameHint: "Seu nome de usuário, como aparece no GitHub.", repoLabel: "Repositório dos cartões", formatLabel: "Formato",
+    htmlOption: "HTML responsivo", markdownOption: "Markdown simples", cardsLegend: "Escolha seus cartões",
+    statsOption: "Status do GitHub", statsHint: "Resumo do ano, projetos e conquistas.",
+    languagesOption: "Linguagens", languagesHint: "Código dos repositórios acessíveis.",
+    rhythmOption: "Ritmo de contribuições", rhythmHint: "Sequência, mapa recente e marcos.",
+    setupNote: "Dados privados são opcionais e configurados nas GitHub Actions do seu repositório. Eles nunca passam pelo site.",
+    permissionsLink: "Ver guia", generateButton: "Gerar snippet", stepPreview: "PRÉVIA",
+    previewTitle: "Uma ideia do resultado", previewSample: "EXEMPLO", previewStats: "Status do GitHub",
     metricStars: "Estrelas", metricCommits: "Commits · ano", metricRepos: "Repositórios · ano",
-    metricContributions: "Contribuições · ano", metricViews: "Visitas do perfil", previewLanguages: "Linguagens mais usadas",
-    previewLanguageNote: "Código dos repositórios configurados", previewRhythm: "Ritmo de contribuições",
-    metricAllTime: "Contribuições · todo o período", metricCurrent: "Sequência atual · dias", metricBest: "Maior sequência · dias",
-    previewRhythmNote: "Prévia visual · os números serão os seus",
-    previewDisclaimer: "Os números acima são ilustrativos. Seus cartões recebem métricas da sua conta após configurar o repositório.",
-    stepOutput: "COPIE", outputTitle: "Snippet do README", copyButton: "Copiar código",
+    metricPulls: "Pull requests", metricIssues: "Issues", metricContributions: "Contribuições · ano", previewLanguages: "Linguagens mais usadas",
+    previewLanguageNote: "Amostra de distribuição por bytes de código.", previewRhythm: "Ritmo de contribuições",
+    metricDays: "dias", metricCurrent: "Sequência atual", metricBest: "Recorde: 6 dias",
+    metricLanguages: "Linguagens", metricYearRepos: "Repos. no ano",
+    previewDisclaimer: "Os números são só um exemplo. Depois de configurar sua cópia, a Action usa suas métricas.",
+    stepOutput: "COPIE", outputTitle: "Cole no README do perfil", copyButton: "Copiar código",
     errorUsername: "Informe um nome de usuário GitHub válido.", errorRepository: "Informe um nome de repositório válido.",
-    errorCards: "Selecione pelo menos um cartão.", errorDeployment: "Informe uma URL HTTPS válida do seu deploy Vercel.",
-    copied: "Código copiado para a área de transferência.", copyFailed: "Não consegui copiar automaticamente. Selecione e copie o código acima.",
-    howEyebrow: "DA CÓPIA AO PERFIL", howTitle: "Três passos. Seu perfil atualizado.", howForkTitle: "Faça sua cópia",
-    howForkText: "Crie um fork público deste repositório para gerar os cartões com as suas métricas.", forkLink: "Abrir fork no GitHub",
-    howConfigureTitle: "Configure a Action", howConfigureText: "Ative o workflow. Secrets opcionais permitem agregar contribuições e linguagens privadas com leitura limitada.",
-    permissionsLink: "Ver permissões e guia", howPasteTitle: "Cole no perfil", howPasteText: "Adicione o snippet ao README do repositório que tem o mesmo nome da sua conta GitHub.",
-    profileHelp: "Ajuda do GitHub", footerText: "Feito para deixar seus projetos falarem por você.", licenseLink: "Licença MIT",
+    errorCards: "Selecione pelo menos um cartão.", copied: "Código copiado para a área de transferência.",
+    copyFailed: "Não consegui copiar automaticamente. Selecione e copie o código acima.",
+    howEyebrow: "DO REPOSITÓRIO AO PERFIL", howTitle: "Pronto em três passos simples.",
+    howForkTitle: "Crie sua cópia", howForkText: "Faça um fork público para gerar seus cartões e controlar sua configuração.",
+    forkLink: "Abrir repositório", howConfigureTitle: "Ative a atualização",
+    howConfigureText: "A GitHub Action atualiza os cartões diariamente. Tokens privados são opcionais.",
+    howPasteTitle: "Adicione ao seu perfil", howPasteText: "Cole o código no README do repositório que tem o mesmo nome da sua conta.",
+    profileHelp: "Ajuda do GitHub", aboutEyebrow: "FEITO EM OPEN SOURCE",
+    aboutTitle: "Um projeto pessoal,<br /><span>aberto para todo mundo.</span>",
+    aboutText: "Criei o ProfileKit para deixar simples montar cartões de perfil claros e personalizáveis. Você pode usar, adaptar e ajudar a melhorar.",
+    creatorGithub: "GitHub do criador ↗", creatorLinkedin: "LinkedIn ↗", contributeTitle: "Quer contribuir?",
+    contributeText: "Sugestões, correções e novas ideias são bem-vindas.", contributeLink: "Abrir uma issue",
+    footerText: "Feito para mostrar o que você constrói.", licenseLink: "Licença MIT",
   },
   en: {
-    navGuide: "How it works", navSource: "Source code", languageLabel: "Language",
-    eyebrow: "OPEN SOURCE · GITHUB PROFILE BUILDER", heroTitle: "Make your work<br /><span>easy to see.</span>",
-    heroDescription: "Choose your cards, preview the layout and create a snippet for your GitHub profile README.",
-    privacyLine: "No sign-in. No tokens in your browser. Your data stays on GitHub.", openSource: "Open source",
-    stepConfigure: "CONFIGURE", formTitle: "Your profile", usernameLabel: "GitHub username",
-    usernameHint: "The name shown at github.com/...", repoLabel: "Cards repository", formatLabel: "Snippet format",
-    htmlOption: "HTML · responsive", markdownOption: "Markdown · simple", cardsLegend: "Cards in your README",
-    statsOption: "GitHub status", statsHint: "Contributions, commits, stars and views", languagesOption: "Languages",
-    languagesHint: "Code distribution by language", rhythmOption: "Contribution rhythm", rhythmHint: "All-time total and streaks",
-    liveLabel: "Vercel live view counter", liveHint: "Fetched when the image loads; GitHub caching may still apply.",
-    deploymentLabel: "Your Vercel deployment URL", deploymentHint: "The project must be connected to your repository and configured for your profile.",
-    generateButton: "Generate snippet", finePrint: "This builder creates embed links only. Your GitHub Action updates the cards in your copy.",
-    stepPreview: "PREVIEW", previewTitle: "Your layout", previewLive: "LAYOUT", previewStats: "GitHub status",
+    navBuilder: "Builder", navGuide: "How to use", navAbout: "About", languageLabel: "Language",
+    eyebrow: "OPEN SOURCE GITHUB PROFILE CARDS", heroTitle: "Your work deserves<br /><span>a profile to match.</span>",
+    heroDescription: "Build a README that shows your activity, languages and rhythm with cards made for your profile.",
+    privacyLine: "No sign-in and no browser tokens.", dailyLine: "Metrics refresh daily.", openSource: "View on GitHub",
+    stepConfigure: "CUSTOMIZE", formTitle: "Your README", usernameLabel: "GitHub username",
+    usernameHint: "Your username as it appears on GitHub.", repoLabel: "Cards repository", formatLabel: "Format",
+    htmlOption: "Responsive HTML", markdownOption: "Simple Markdown", cardsLegend: "Choose your cards",
+    statsOption: "GitHub status", statsHint: "Year summary, projects and achievements.",
+    languagesOption: "Languages", languagesHint: "Code from accessible repositories.",
+    rhythmOption: "Contribution rhythm", rhythmHint: "Streak, recent map and milestones.",
+    setupNote: "Private data is optional and configured in your repository's GitHub Actions. It never passes through this site.",
+    permissionsLink: "Read the guide", generateButton: "Generate snippet", stepPreview: "PREVIEW",
+    previewTitle: "A look at the result", previewSample: "SAMPLE", previewStats: "GitHub status",
     metricStars: "Stars", metricCommits: "Commits · year", metricRepos: "Repositories · year",
-    metricContributions: "Contributions · year", metricViews: "Profile views", previewLanguages: "Most used languages",
-    previewLanguageNote: "Code from configured repositories", previewRhythm: "Contribution rhythm",
-    metricAllTime: "Contributions · all time", metricCurrent: "Current streak · days", metricBest: "Longest streak · days",
-    previewRhythmNote: "Visual preview · the numbers will be yours",
-    previewDisclaimer: "The numbers above are examples. Your cards use your account metrics after you configure the repository.",
-    stepOutput: "COPY", outputTitle: "README snippet", copyButton: "Copy code",
-    errorUsername: "Enter a valid GitHub username.", errorRepository: "Enter a valid repository name.", errorCards: "Select at least one card.",
-    errorDeployment: "Enter a valid HTTPS URL for your Vercel deployment.", copied: "Code copied to the clipboard.", copyFailed: "Automatic copy failed. Select and copy the code above.",
-    howEyebrow: "FROM FORK TO PROFILE", howTitle: "Three steps. Your profile is ready.", howForkTitle: "Create your copy",
-    howForkText: "Fork this public repository to generate the cards with your own metrics.", forkLink: "Open fork on GitHub",
-    howConfigureTitle: "Configure Actions", howConfigureText: "Enable the workflow. Optional secrets aggregate private contributions and languages with limited read access.",
-    permissionsLink: "View permissions and guide", howPasteTitle: "Paste into your profile", howPasteText: "Add the snippet to the README in the repository with the same name as your GitHub account.",
-    profileHelp: "GitHub help", footerText: "Made to let your projects speak for you.", licenseLink: "MIT License",
+    metricPulls: "Pull requests", metricIssues: "Issues", metricContributions: "Contributions · year", previewLanguages: "Most used languages",
+    previewLanguageNote: "Example distribution by code bytes.", previewRhythm: "Contribution rhythm",
+    metricDays: "days", metricCurrent: "Current streak", metricBest: "Record: 6 days",
+    metricLanguages: "Languages", metricYearRepos: "Repos · year",
+    previewDisclaimer: "These numbers are examples. After setup, your copy's Action uses your metrics.",
+    stepOutput: "COPY", outputTitle: "Paste into your profile README", copyButton: "Copy code",
+    errorUsername: "Enter a valid GitHub username.", errorRepository: "Enter a valid repository name.",
+    errorCards: "Select at least one card.", copied: "Code copied to the clipboard.",
+    copyFailed: "Automatic copy failed. Select and copy the code above.",
+    howEyebrow: "FROM REPOSITORY TO PROFILE", howTitle: "Ready in three simple steps.",
+    howForkTitle: "Create your copy", howForkText: "Fork this public repository to generate your cards and manage your setup.",
+    forkLink: "Open repository", howConfigureTitle: "Enable updates",
+    howConfigureText: "A GitHub Action refreshes the cards daily. Private tokens are optional.",
+    howPasteTitle: "Add it to your profile", howPasteText: "Paste the code into the README in the repository with your GitHub username.",
+    profileHelp: "GitHub help", aboutEyebrow: "MADE IN OPEN SOURCE",
+    aboutTitle: "A personal project,<br /><span>open for everyone.</span>",
+    aboutText: "I created ProfileKit to make clear, customizable profile cards easy to build. Use it, adapt it and help make it better.",
+    creatorGithub: "Creator on GitHub ↗", creatorLinkedin: "LinkedIn ↗", contributeTitle: "Want to contribute?",
+    contributeText: "Suggestions, fixes and new ideas are welcome.", contributeLink: "Open an issue",
+    footerText: "Made to show what you build.", licenseLink: "MIT License",
   },
   es: {
-    navGuide: "Cómo funciona", navSource: "Código fuente", languageLabel: "Idioma",
-    eyebrow: "OPEN SOURCE · GENERADOR DE PERFIL GITHUB", heroTitle: "Haz que tu trabajo<br /><span>se vea claro.</span>",
-    heroDescription: "Elige las tarjetas, revisa la vista previa y genera un snippet para el README de tu perfil.",
-    privacyLine: "Sin iniciar sesión. Sin tokens en el navegador. Tus datos permanecen en GitHub.", openSource: "Código abierto",
-    stepConfigure: "CONFIGURA", formTitle: "Tu perfil", usernameLabel: "Usuario de GitHub",
-    usernameHint: "El nombre que aparece en github.com/...", repoLabel: "Repositorio de las tarjetas", formatLabel: "Formato del snippet",
-    htmlOption: "HTML · adaptable", markdownOption: "Markdown · simple", cardsLegend: "Tarjetas en tu README",
-    statsOption: "Estado de GitHub", statsHint: "Contribuciones, commits, estrellas y visitas", languagesOption: "Lenguajes",
-    languagesHint: "Distribución del código por lenguaje", rhythmOption: "Ritmo de contribuciones", rhythmHint: "Total histórico y rachas",
-    liveLabel: "Contador de visitas en Vercel", liveHint: "Consulta al recibir la imagen; GitHub todavía puede usar caché.",
-    deploymentLabel: "URL de tu despliegue en Vercel", deploymentHint: "El proyecto debe estar conectado a tu repositorio y configurado para tu perfil.",
-    generateButton: "Generar snippet", finePrint: "El generador crea solo los enlaces. Tu GitHub Action actualiza las tarjetas de tu copia.",
-    stepPreview: "VISTA PREVIA", previewTitle: "Tu diseño", previewLive: "DISEÑO", previewStats: "Estado de GitHub",
+    navBuilder: "Generador", navGuide: "Cómo usar", navAbout: "Acerca de", languageLabel: "Idioma",
+    eyebrow: "TARJETAS OPEN SOURCE PARA GITHUB", heroTitle: "Tu trabajo merece<br /><span>un perfil a la altura.</span>",
+    heroDescription: "Crea un README que muestre tu actividad, tus lenguajes y tu ritmo con tarjetas hechas para tu perfil.",
+    privacyLine: "Sin iniciar sesión y sin tokens en el navegador.", dailyLine: "Métricas actualizadas a diario.", openSource: "Ver en GitHub",
+    stepConfigure: "PERSONALIZA", formTitle: "Tu README", usernameLabel: "Usuario de GitHub",
+    usernameHint: "Tu nombre de usuario tal como aparece en GitHub.", repoLabel: "Repositorio de tarjetas", formatLabel: "Formato",
+    htmlOption: "HTML adaptable", markdownOption: "Markdown simple", cardsLegend: "Elige tus tarjetas",
+    statsOption: "Estado de GitHub", statsHint: "Resumen anual, proyectos y logros.",
+    languagesOption: "Lenguajes", languagesHint: "Código de los repositorios accesibles.",
+    rhythmOption: "Ritmo de contribuciones", rhythmHint: "Racha, mapa reciente y metas.",
+    setupNote: "Los datos privados son opcionales y se configuran en GitHub Actions de tu repositorio. Nunca pasan por este sitio.",
+    permissionsLink: "Ver guía", generateButton: "Generar snippet", stepPreview: "VISTA PREVIA",
+    previewTitle: "Así podría quedar", previewSample: "EJEMPLO", previewStats: "Estado de GitHub",
     metricStars: "Estrellas", metricCommits: "Commits · año", metricRepos: "Repositorios · año",
-    metricContributions: "Contribuciones · año", metricViews: "Visitas del perfil", previewLanguages: "Lenguajes más usados",
-    previewLanguageNote: "Código de los repositorios configurados", previewRhythm: "Ritmo de contribuciones",
-    metricAllTime: "Contribuciones · todo el período", metricCurrent: "Racha actual · días", metricBest: "Racha máxima · días",
-    previewRhythmNote: "Vista visual · los números serán tuyos",
-    previewDisclaimer: "Los números de arriba son ejemplos. Tus tarjetas usarán las métricas de tu cuenta tras configurar el repositorio.",
-    stepOutput: "COPIA", outputTitle: "Snippet del README", copyButton: "Copiar código",
-    errorUsername: "Escribe un usuario válido de GitHub.", errorRepository: "Escribe un nombre de repositorio válido.", errorCards: "Selecciona al menos una tarjeta.",
-    errorDeployment: "Escribe una URL HTTPS válida de tu despliegue en Vercel.", copied: "Código copiado al portapapeles.", copyFailed: "No se pudo copiar automáticamente. Selecciona y copia el código de arriba.",
-    howEyebrow: "DEL FORK AL PERFIL", howTitle: "Tres pasos. Tu perfil actualizado.", howForkTitle: "Crea tu copia",
-    howForkText: "Haz un fork público de este repositorio para generar tarjetas con tus propias métricas.", forkLink: "Abrir fork en GitHub",
-    howConfigureTitle: "Configura Actions", howConfigureText: "Activa el workflow. Los secrets opcionales agregan contribuciones y lenguajes privados con acceso de lectura limitado.",
-    permissionsLink: "Ver permisos y guía", howPasteTitle: "Pégalo en tu perfil", howPasteText: "Añade el snippet al README del repositorio que tenga el mismo nombre que tu cuenta de GitHub.",
-    profileHelp: "Ayuda de GitHub", footerText: "Hecho para que tus proyectos hablen por ti.", licenseLink: "Licencia MIT",
+    metricPulls: "Pull requests", metricIssues: "Incidencias", metricContributions: "Contribuciones · año", previewLanguages: "Lenguajes más usados",
+    previewLanguageNote: "Ejemplo de distribución por bytes de código.", previewRhythm: "Ritmo de contribuciones",
+    metricDays: "días", metricCurrent: "Racha actual", metricBest: "Récord: 6 días",
+    metricLanguages: "Lenguajes", metricYearRepos: "Repos. del año",
+    previewDisclaimer: "Son números de ejemplo. Tras configurar tu copia, la Action usará tus métricas.",
+    stepOutput: "COPIA", outputTitle: "Pega en el README de tu perfil", copyButton: "Copiar código",
+    errorUsername: "Escribe un usuario válido de GitHub.", errorRepository: "Escribe un repositorio válido.",
+    errorCards: "Selecciona al menos una tarjeta.", copied: "Código copiado al portapapeles.",
+    copyFailed: "No se pudo copiar automáticamente. Selecciona y copia el código de arriba.",
+    howEyebrow: "DEL REPOSITORIO AL PERFIL", howTitle: "Listo en tres pasos sencillos.",
+    howForkTitle: "Crea tu copia", howForkText: "Haz un fork público para generar tus tarjetas y controlar la configuración.",
+    forkLink: "Abrir repositorio", howConfigureTitle: "Activa las actualizaciones",
+    howConfigureText: "Una GitHub Action actualiza las tarjetas a diario. Los tokens privados son opcionales.",
+    howPasteTitle: "Añádelo a tu perfil", howPasteText: "Pega el código en el README del repositorio con el nombre de tu cuenta.",
+    profileHelp: "Ayuda de GitHub", aboutEyebrow: "HECHO EN OPEN SOURCE",
+    aboutTitle: "Un proyecto personal,<br /><span>abierto para todos.</span>",
+    aboutText: "Creé ProfileKit para facilitar tarjetas de perfil claras y personalizables. Puedes usarlo, adaptarlo y ayudar a mejorarlo.",
+    creatorGithub: "Creador en GitHub ↗", creatorLinkedin: "LinkedIn ↗", contributeTitle: "¿Quieres contribuir?",
+    contributeText: "Se agradecen sugerencias, correcciones e ideas nuevas.", contributeLink: "Abrir una issue",
+    footerText: "Hecho para mostrar lo que construyes.", licenseLink: "Licencia MIT",
   },
 };
 
@@ -97,8 +116,7 @@ const localeSelect = $("#locale");
 const snippetElement = $("#snippet");
 const errorElement = $("#formError");
 const copyStatus = $("#copyStatus");
-const liveViews = $("#liveViews");
-const deploymentField = $("#deploymentField");
+const HTML_TRANSLATIONS = new Set(["heroTitle", "aboutTitle"]);
 
 function readOptions() {
   return {
@@ -107,8 +125,6 @@ function readOptions() {
     locale: localeSelect.value,
     format: $("#format").value,
     cards: [...document.querySelectorAll('input[name="card"]:checked')].map(input => input.value),
-    liveViews: liveViews.checked,
-    deploymentUrl: $("#deploymentUrl").value,
   };
 }
 
@@ -117,32 +133,28 @@ function translate(key) {
 }
 
 function applyLocale(locale) {
-  localeSelect.value = locale;
-  document.documentElement.lang = locale;
+  const nextLocale = Object.hasOwn(TRANSLATIONS, locale) ? locale : "pt-BR";
+  localeSelect.value = nextLocale;
+  document.documentElement.lang = nextLocale;
   for (const element of document.querySelectorAll("[data-i18n]")) {
     const value = translate(element.dataset.i18n);
-    if (element.dataset.i18n === "heroTitle") element.innerHTML = value;
+    if (HTML_TRANSLATIONS.has(element.dataset.i18n)) element.innerHTML = value;
     else element.textContent = value;
   }
   renderSnippet();
 }
 
 function errorMessage(code) {
-  const key = { username: "errorUsername", repository: "errorRepository", cards: "errorCards", deployment: "errorDeployment" }[code];
+  const key = { username: "errorUsername", repository: "errorRepository", cards: "errorCards" }[code];
   return key ? translate(key) : "";
 }
 
 function renderSnippet() {
   const options = readOptions();
   const validation = validateOptions(options);
-  deploymentField.hidden = !liveViews.checked;
   errorElement.hidden = validation.ok;
   errorElement.textContent = validation.ok ? "" : errorMessage(validation.code);
-  if (!validation.ok) {
-    snippetElement.textContent = "";
-    return;
-  }
-  snippetElement.textContent = buildReadmeSnippet(options);
+  snippetElement.textContent = validation.ok ? buildReadmeSnippet(options) : "";
 }
 
 function renderPreviewSelection() {
@@ -172,7 +184,7 @@ async function copySnippet() {
   }
 }
 
-for (const element of document.querySelectorAll("#username, #repository, #format, #deploymentUrl")) {
+for (const element of document.querySelectorAll("#username, #repository, #format")) {
   element.addEventListener("input", renderSnippet);
   element.addEventListener("change", renderSnippet);
 }
@@ -182,7 +194,6 @@ for (const input of document.querySelectorAll('input[name="card"]')) {
     renderSnippet();
   });
 }
-liveViews.addEventListener("change", renderSnippet);
 localeSelect.addEventListener("change", () => {
   copyStatus.textContent = "";
   applyLocale(localeSelect.value);
