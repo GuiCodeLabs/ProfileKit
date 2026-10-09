@@ -13,11 +13,17 @@ Edite `profile-card.json`:
 }
 ```
 
-O filtro `exclude_repositories` afeta **só as linguagens**. O total de contribuições consulta o calendário da conta, inclusive quando os repositórios pertencem a uma organização. As datas do GitHub são UTC, portanto não é preciso configurar fuso horário. Ative a opção de mostrar contribuições privadas no seu perfil se quiser expor as contagens anônimas.
+O filtro `exclude_repositories` afeta **só as linguagens**. O total de contribuições consulta o calendário da conta, inclusive quando os repositórios pertencem a uma organização. As datas do GitHub são UTC, portanto não é preciso configurar fuso horário.
+
+## Incluir contribuições privadas agregadas
+
+O cartão conta commits e repositórios distintos com commits no ano. Para incluir atividade privada agregada, crie um token clássico com **somente** o escopo `read:user`, escolha uma validade curta e salve-o como o secret `PRIVATE_CONTRIBUTIONS_TOKEN` em **Settings → Secrets and variables → Actions**. Esse escopo permite consultar os dados de contribuição da conta, sem permissão para escrever ou acessar o conteúdo dos repositórios. Não acrescente `repo`, `workflow` nem permissões de escrita.
+
+Ative também **Private contributions** nas configurações de perfil do GitHub. Sem o secret, o cartão sinaliza que commits e repositórios refletem apenas os dados públicos acessíveis ao workflow. O cartão publica contagens agregadas e nunca nomes de repositórios privados.
 
 ## Incluir linguagens de repositórios privados
 
-O card de linguagens inclui os repositórios próprios públicos por padrão. Para acrescentar seus repositórios próprios privados, crie um **fine-grained personal access token** na sua conta GitHub, selecione somente os repositórios privados que quer incluir e conceda apenas a permissão de repositório **Metadata: read**. Não conceda `Contents`, escrita ou acesso a repositórios que não devam entrar no cálculo.
+O card de linguagens inclui os repositórios próprios públicos por padrão. Para acrescentar repositórios privados que você possui ou acessa, crie um **fine-grained personal access token** na sua conta GitHub, selecione somente os repositórios privados que quer incluir e conceda apenas a permissão de repositório **Metadata: read**. Não conceda `Contents`, escrita ou acesso a repositórios que não devam entrar no cálculo.
 
 No repositório público do cartão, abra **Settings → Secrets and variables → Actions → New repository secret**. Use o nome `PRIVATE_REPOSITORIES_TOKEN` e cole o token no campo de valor. O workflow usa essa credencial somente para consultar os totais de linguagens. Os SVGs publicados contêm nomes de linguagens e totais de bytes, sem nomes dos repositórios ou conteúdo de arquivos. Se o secret não estiver configurado, o cartão continua calculando apenas os repositórios públicos e informa isso no subtítulo.
 
@@ -32,6 +38,8 @@ O token precisa ter acesso a cada repositório privado que deseja incluir. Se um
 | Español | `stats-es.svg` | `languages-es.svg` | `rhythm-es.svg` / `rhythm-mobile-es.svg` | `locale=es` |
 
 Para traduzir outro idioma, acrescente rótulos em `LABELS`, uma extensão em `output_name` e o idioma na lista de `SUPPORTED_LOCALES` em `scripts/generate_card.py`. Atualize também `LOCALES` em `api/card.js`. O GitHub não envia o idioma do visitante para uma imagem SVG inserida no README; a escolha é feita na URL.
+
+O [gerador web de README](https://guicodelabs-profile-card.vercel.app) detecta o idioma do navegador e permite escolher português, inglês ou espanhol. Ele só gera o snippet: nenhum token é pedido ou enviado pelo navegador.
 
 ## Visitas dentro do cartão
 
@@ -56,7 +64,7 @@ python3 scripts/preview.py
 Use `--data CAMINHO` para um snapshot de outra conta e `--output-dir CAMINHO` para outra pasta. Os SVGs resultantes podem ser convertidos com Inkscape. Para consultar números reais novamente:
 
 ```bash
-GITHUB_TOKEN=SEU_TOKEN_DE_LEITURA PRIVATE_REPOSITORIES_TOKEN=TOKEN_OPCIONAL python3 scripts/generate_card.py
+GITHUB_TOKEN=SEU_TOKEN_DE_LEITURA PRIVATE_REPOSITORIES_TOKEN=TOKEN_OPCIONAL PRIVATE_CONTRIBUTIONS_TOKEN=TOKEN_READ_USER python3 scripts/generate_card.py
 ```
 
 Os tokens são usados apenas no processo local; jamais grave seus valores no repositório. No workflow, o GitHub fornece um token temporário para os dados públicos. O parâmetro `--refresh-visits` consulta e incrementa o contador, então não o use repetidamente para prévias.
