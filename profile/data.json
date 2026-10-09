@@ -3,12 +3,12 @@
   "name": "Guilherme Beserra",
   "first_year": 2024,
   "year": 2026,
-  "contributions_all": 432,
-  "contributions_year": 390,
-  "commits_all": 154,
-  "commits_year": 121,
+  "contributions_all": 439,
+  "contributions_year": 397,
+  "commits_all": 157,
+  "commits_year": 124,
   "stars": 40,
-  "prs": 2,
+  "prs": 6,
   "issues": 0,
   "visits": 5,
   "languages": [
@@ -110,8 +110,10 @@
     0,
     7,
     25,
-    8
+    15
   ],
   "languages_include_private": false,
-  "generated_at": "2026-10-09T11:17:39+00:00"
+  "repositories_year": 16,
+  "contributions_include_private": false,
+  "generated_at": "2026-10-09T16:31:00+00:00"
 }
