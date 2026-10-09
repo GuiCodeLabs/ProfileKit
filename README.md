@@ -2,7 +2,7 @@
 
 Cartões SVG originais para mostrar atividade, linguagens e sequência de contribuições de um perfil GitHub. Este repositório gera os cartões do [GuiCodeLabs](https://github.com/GuiCodeLabs) e pode ser adaptado para qualquer usuário.
 
-<p align="center"><img src="profile/stats.svg" width="520" alt="Atividade no GitHub de Guilherme Beserra" /></p>
+<p align="center"><img src="https://guicodelabs-profile-card.vercel.app/api/card?type=stats&amp;locale=pt-BR" width="520" alt="Atividade no GitHub de Guilherme Beserra" /></p>
 <p align="center"><img src="profile/languages.svg" width="520" alt="Linguagens dos repositórios públicos" /></p>
 
 ## O que os números significam
@@ -17,7 +17,7 @@ Cartões SVG originais para mostrar atividade, linguagens e sequência de contri
 | Sequências | Dias consecutivos com contribuições no calendário. A sequência atual admite hoje ainda vazio quando ontem teve atividade. |
 | Visitas | Solicitações que chegam ao contador Komarev, não visitantes únicos. O GitHub usa um proxy/cache de imagens, por isso um reload não necessariamente gera outra solicitação. |
 
-**Exemplo:** 413 contribuições e 141 commits públicos podem estar ambos corretos. Contribuições têm mais tipos de atividade e podem incluir contagens privadas anônimas. A diferença não indica 272 commits privados.
+**Exemplo:** 400 contribuições e 140 commits públicos podem estar ambos corretos. Contribuições têm mais tipos de atividade e podem incluir contagens privadas anônimas. A diferença não indica 260 commits privados.
 
 Os intervalos anuais usam o fuso em `profile-card.json`. Os cartões são SVGs próprios, sem reaproveitar arte ou código dos serviços de estatísticas anteriores.
 
