@@ -16,6 +16,9 @@ on:
     paths:
       - scripts/generate_card.py
       - scripts/preview.py
+      - index.html
+      - styles.css
+      - web/**
       - api/card.js
       - tests/**
       - package.json
@@ -25,6 +28,9 @@ on:
     paths:
       - scripts/generate_card.py
       - scripts/preview.py
+      - index.html
+      - styles.css
+      - web/**
       - api/card.js
       - tests/**
       - package.json
@@ -63,6 +69,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           # Optional fine-grained token with Metadata: read on selected private repositories.
           PRIVATE_REPOSITORIES_TOKEN: ${{ secrets.PRIVATE_REPOSITORIES_TOKEN }}
+          # Optional classic PAT with read:user only for private contribution totals.
+          PRIVATE_CONTRIBUTIONS_TOKEN: ${{ secrets.PRIVATE_CONTRIBUTIONS_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           EVENT_SCHEDULE: ${{ github.event.schedule }}
           REFRESH_VISITS: ${{ inputs.refresh_visits }}
