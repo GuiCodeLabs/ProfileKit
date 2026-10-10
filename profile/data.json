@@ -2,16 +2,16 @@
   "username": "GuiCodeLabs",
   "name": "Guilherme Beserra",
   "year": 2026,
-  "contributions_year": 401,
-  "commits_year": 126,
+  "contributions_year": 471,
+  "commits_year": 183,
   "stars": 40,
-  "prs": 8,
+  "prs": 18,
   "issues": 0,
   "languages": [
     {
       "name": "Python",
       "color": "#3572A5",
-      "size": 10514956
+      "size": 10556422
     },
     {
       "name": "PHP",
@@ -21,17 +21,17 @@
     {
       "name": "HTML",
       "color": "#e34c26",
-      "size": 285844
+      "size": 301923
     },
     {
       "name": "CSS",
       "color": "#663399",
-      "size": 146361
+      "size": 167565
     },
     {
       "name": "JavaScript",
       "color": "#f1e05a",
-      "size": 128607
+      "size": 148720
     },
     {
       "name": "PowerShell",
@@ -69,10 +69,9 @@
       "size": 551
     }
   ],
-  "current_streak": 3,
+  "current_streak": 4,
   "longest_streak": 6,
   "recent_days": [
-    0,
     0,
     0,
     0,
@@ -106,10 +105,11 @@
     0,
     7,
     25,
-    19
+    88,
+    1
   ],
   "languages_include_private": false,
   "repositories_year": 16,
   "contributions_include_private": false,
-  "generated_at": "2026-10-09T16:38:37+00:00"
+  "generated_at": "2026-10-10T10:34:28+00:00"
 }
